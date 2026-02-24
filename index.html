@@ -1123,11 +1123,17 @@ function switchPage(page, btn) {
 }
 
 function renderPage(page) {
-  if (page === 'grupo') renderGrupo();
-  if (page === 'financeiro') renderFinanceiro();
-  if (page === 'contatos') renderContatos();
-  if (page === 'documentos') renderDocumentos();
-  if (page === 'relatorios') renderRelatorios();
+  try {
+    if (page === 'grupo') renderGrupo();
+    else if (page === 'financeiro') renderFinanceiro();
+    else if (page === 'contatos') renderContatos();
+    else if (page === 'documentos') renderDocumentos();
+    else if (page === 'relatorios') renderRelatorios();
+  } catch(e) {
+    const container = document.getElementById('page-' + page);
+    if (container) container.innerHTML = '<div style="padding:20px;color:#f7645a;font-size:13px;background:#1f1010;border-radius:8px;margin:16px;">Erro: ' + e.message + '<br><small>' + e.stack + '</small></div>';
+    console.error('renderPage error:', e);
+  }
 }
 
 function refreshCurrentPage() { renderPage(currentPage); }
@@ -1191,6 +1197,7 @@ function selectCompany(id) {
 // ============================================================
 function renderGrupo() {
   const container = document.getElementById('grupo-content');
+  if (!container) return;
   const period = 'month';
   const allTxs = DB.transactions.filter(t => t.type !== 'transfer');
   const monthTxs = filterByPeriod(allTxs, 'month');
@@ -1372,6 +1379,7 @@ function renderGrupo() {
 // ============================================================
 function renderFinanceiro() {
   const container = document.getElementById('financeiro-content');
+  if (!container) return;
   let txs;
   const isConsolidated = currentCompany === 'consolidated';
 
@@ -1455,6 +1463,7 @@ function setTxPeriod(p) { txPeriod = p; renderFinanceiro(); }
 // ============================================================
 function renderContatos() {
   const container = document.getElementById('contatos-content');
+  if (!container) return;
   const types = ['all','Cliente','Fornecedor','Funcionário','Parceiro'];
 
   let contacts;
@@ -1520,6 +1529,7 @@ function filterContactSearch(val) {
 // ============================================================
 function renderDocumentos() {
   const container = document.getElementById('documentos-content');
+  if (!container) return;
   let txs = currentCompany === 'consolidated' ? DB.transactions : getCompanyTxs(currentCompany);
   const withDoc = txs.filter(t => t.doc);
   const total = txs.length;
@@ -1577,6 +1587,7 @@ function setDocFilter(f, btn) {
 // ============================================================
 function renderRelatorios() {
   const container = document.getElementById('relatorios-content');
+  if (!container) return;
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const fullMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -2067,20 +2078,28 @@ saveData(); closeModal(); refreshCurrentPage();
 }
 
 // ============================================================
-// INIT
+// INIT — run after DOM ready
 // ============================================================
+function appInit() {
+try {
 updateAccent();
 updateTopbar();
-switchPage(‘grupo’, document.querySelector(’.nav-btn’));
-document.getElementById(‘fab’).style.display = ‘none’;
+const fab = document.getElementById(‘fab’);
+if (fab) fab.style.display = ‘none’;
+const firstNav = document.querySelector(’.nav-btn’);
+switchPage(‘grupo’, firstNav);
+} catch(e) {
+console.error(‘Init error:’, e);
+setTimeout(appInit, 300);
+}
+}
+if (document.readyState === ‘loading’) {
+document.addEventListener(‘DOMContentLoaded’, appInit);
+} else {
+appInit();
+}
 
-// PWA Manifest
-const manifest = { name: ‘Holding CRM’, short_name: ‘HoldingCRM’, start_url: ‘.’, display: ‘standalone’, background_color: ‘#0a0b0f’, theme_color: ‘#0a0b0f’, icons: [{ src: ‘data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230a0b0f"/><text y=".9em" font-size="80" x="10">📊</text></svg>’, sizes: ‘512x512’, type: ‘image/svg+xml’ }] };
-const blob = new Blob([JSON.stringify(manifest)], { type: ‘application/json’ });
-const manifestUrl = URL.createObjectURL(blob);
-const link = document.createElement(‘link’);
-link.rel = ‘manifest’; link.href = manifestUrl;
-document.head.appendChild(link);
+// PWA ready
 </script>
 
 </body>
