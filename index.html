@@ -6,2100 +6,884 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Holding CRM">
 <title>Holding CRM</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0a0b0f;color:#e8eaf0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;overflow:hidden}
+:root{--accent:#4f8ef7;--green:#2dd4a0;--red:#f7645a;--yellow:#f5c842;--bg2:#11131a;--bg3:#181b24;--bg4:#1f2330;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text2:#8b8fa8;--text3:#555870}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10}
+#logo{font-size:18px;font-weight:700;flex-shrink:0}
+#logo span{color:var(--accent)}
+#cosel{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:30px;padding:8px 14px;color:var(--e8eaf0);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
+#cosel-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0}
+#cosel-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e8eaf0}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:80px}
+#content::-webkit-scrollbar{display:none}
+#nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);font-size:11px;font-weight:500;border:none;background:none;padding:6px 2px}
+.nb.on{color:var(--accent)}
+.nb svg{width:22px;height:22px}
+.ndot{width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:0}
+.nb.on .ndot{opacity:1}
+#fab{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);border:none;color:white;font-size:26px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.5);z-index:9}
+.page{display:none;padding:16px}
+.page.on{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.card-sm{padding:14px}
+.ct{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px}
+.sl{font-size:12px;color:var(--text3);margin-bottom:6px}
+.sv{font-size:19px;font-weight:700;font-family:ui-monospace,monospace}
+.sv.g{color:var(--green)}.sv.r{color:var(--red)}.sv.b{color:var(--accent)}.sv.y{color:var(--yellow)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ccard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;position:relative;overflow:hidden}
+.ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cc,#4f8ef7)}
+.cn{font-size:14px;font-weight:600;margin-bottom:8px}
+.cr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.cr span:first-child{color:var(--text3)}
+.hbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:20px;margin-top:6px}
+.hok{background:rgba(45,212,160,.15);color:var(--green)}
+.hwarn{background:rgba(245,200,66,.15);color:var(--yellow)}
+.hbad{background:rgba(247,100,90,.15);color:var(--red)}
+.stitle{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;margin-top:4px;display:flex;align-items:center;justify-content:space-between}
+.stitle button{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer;background:none;border:none}
+.txlist{display:flex;flex-direction:column;gap:8px}
+.txi{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.txi:active{background:var(--bg3)}
+.tico{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tico.in{background:rgba(45,212,160,.15)}.tico.out{background:rgba(247,100,90,.15)}.tico.tr{background:rgba(79,142,247,.15)}
+.tiinfo{flex:1;min-width:0}
+.tidesc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timeta{font-size:12px;color:var(--text3);margin-top:2px}
+.tiright{text-align:right;flex-shrink:0}
+.tiamt{font-size:15px;font-weight:700;font-family:ui-monospace,monospace}
+.tiamt.in{color:var(--green)}.tiamt.out{color:var(--red)}.tiamt.tr{color:var(--accent)}
+.badges{display:flex;gap:4px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:10px}
+.bpaid{background:rgba(45,212,160,.12);color:var(--green)}
+.bpend{background:rgba(245,200,66,.15);color:var(--yellow)}
+.bdoc{background:rgba(79,142,247,.12);color:var(--accent)}
+.frow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.fc{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;white-space:nowrap}
+.fc.on{background:var(--accent);border-color:var(--accent);color:white}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
+.mo.open{opacity:1;pointer-events:all}
+.mb{background:var(--bg2);border-radius:20px 20px 0 0;border:1px solid var(--border2);width:100%;max-height:92vh;overflow-y:auto;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(40px);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.mo.open .mb{transform:translateY(0)}
+.mh{width:40px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 18px}
+.mt{font-size:18px;font-weight:700;margin-bottom:20px}
+.fg{margin-bottom:16px}
+.fl{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block}
+.fi,.fs,.fta{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:#e8eaf0;font-family:inherit;font-size:15px;padding:12px 14px;outline:none}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--accent)}
+.fta{resize:none;min-height:80px}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ttog{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.tb{padding:10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.tb.ain{background:rgba(45,212,160,.2);border-color:var(--green);color:var(--green)}
+.tb.aout{background:rgba(247,100,90,.2);border-color:var(--red);color:var(--red)}
+.tb.atr{background:rgba(79,142,247,.2);border-color:var(--accent);color:var(--accent)}
+.btn{width:100%;padding:14px;border-radius:8px;border:none;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.btn:active{opacity:.8}
+.bprim{background:var(--accent);color:white}
+.bsec{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.bdng{background:rgba(247,100,90,.2);color:var(--red);border:1px solid rgba(247,100,90,.3)}
+.brow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.cdots{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.cdot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+.cdot.sel{border-color:white;transform:scale(1.15)}
+.ci{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px}
+.cav{width:40px;height:40px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--accent);flex-shrink:0}
+.ciinfo{flex:1;min-width:0}
+.cin{font-size:14px;font-weight:600}
+.cim{font-size:12px;color:var(--text3);margin-top:2px}
+.itabs{display:flex;gap:4px;background:var(--bg3);border-radius:8px;padding:4px;margin-bottom:16px}
+.itab{flex:1;padding:8px;border-radius:6px;border:none;background:none;color:var(--text3);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.itab.on{background:var(--bg2);color:#e8eaf0;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.si{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)}
+.si:last-child{border:none}
+.rrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.rrow:last-child{border:none}
+.rrow.tot{font-weight:700}
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty div:first-child{font-size:48px;margin-bottom:12px}
+.srch{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:30px;color:#e8eaf0;font-family:inherit;font-size:14px;padding:10px 16px;outline:none;margin-bottom:14px}
+.dccov{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.dcbar{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.dcfill{height:100%;background:var(--accent);border-radius:3px}
+.tritem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tritem:last-child{border:none}
+.csitem{display:flex;align-items:center;gap:12px;padding:14px;border-radius:8px;cursor:pointer;margin-bottom:6px}
+.csitem:active,.csitem.cur{background:var(--bg3)}
+.csdot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.csname{font-size:15px;font-weight:600}
+.cssub{font-size:12px;color:var(--text3)}
 </style>
-<script>
-// ── Minimal Chart Library (Canvas-based, no dependencies) ──
-window.Chart = (function() {
-  function Chart(canvas, config) {
-    this.canvas = canvas;
-    this.config = config;
-    this.ctx = canvas.getContext('2d');
-    this._draw();
-  }
-  Chart.prototype.destroy = function() {
-    const c = this.canvas;
-    const ctx = c.getContext('2d');
-    ctx.clearRect(0,0,c.width,c.height);
-  };
-  Chart.prototype._draw = function() {
-    const cfg = this.config;
-    const type = cfg.type;
-    if (type === 'bar') this._drawBar();
-    else if (type === 'doughnut') this._drawDonut();
-  };
-  Chart.prototype._drawBar = function() {
-    const cfg = this.config;
-    const data = cfg.data;
-    const opts = cfg.options || {};
-    const canvas = this.canvas;
-    const ctx = this.ctx;
-    const isHoriz = opts.indexAxis === 'y';
-    const dpr = window.devicePixelRatio || 1;
-    const W = canvas.clientWidth || 300;
-    const H = canvas.clientHeight || 200;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0,0,W,H);
-    const datasets = data.datasets;
-    const labels = data.labels || [];
-    const pad = { top: 20, right: 10, bottom: isHoriz ? 10 : 30, left: isHoriz ? 90 : 50 };
-    const plotW = W - pad.left - pad.right;
-    const plotH = H - pad.top - pad.bottom;
-    // Find max value
-    let maxVal = 0;
-    datasets.forEach(ds => ds.data.forEach(v => { if (v > maxVal) maxVal = v; }));
-    maxVal = maxVal * 1.15 || 100;
-    const groupCount = labels.length;
-    const dsCount = datasets.length;
-    const groupW = (isHoriz ? plotH : plotW) / (groupCount || 1);
-    const barPad = groupW * 0.15;
-    const barW = (groupW - barPad * 2) / dsCount;
-    // Draw grid lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const ratio = i / 4;
-      if (isHoriz) {
-        const x = pad.left + ratio * plotW;
-        ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + plotH); ctx.stroke();
-        const v = maxVal * ratio;
-        ctx.fillStyle = '#555870'; ctx.font = '10px DM Sans,sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(v >= 1000 ? (v/1000).toFixed(0)+'K' : v.toFixed(0), x, pad.top + plotH + 14);
-      } else {
-        const y = pad.top + plotH - ratio * plotH;
-        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + plotW, y); ctx.stroke();
-        const v = maxVal * ratio;
-        ctx.fillStyle = '#555870'; ctx.font = '10px DM Sans,sans-serif'; ctx.textAlign = 'right';
-        ctx.fillText(v >= 1000 ? (v/1000).toFixed(0)+'K' : v.toFixed(0), pad.left - 4, y + 3);
-      }
-    }
-    // Draw bars
-    labels.forEach((label, gi) => {
-      datasets.forEach((ds, di) => {
-        const val = ds.data[gi] || 0;
-        const ratio = val / maxVal;
-        const color = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[gi] : ds.backgroundColor;
-        ctx.fillStyle = color || '#4f8ef7';
-        const r = 4;
-        if (isHoriz) {
-          const y = pad.top + gi * groupW + barPad + di * barW;
-          const bW = ratio * plotW;
-          const bH = barW - 2;
-          ctx.beginPath();
-          ctx.moveTo(pad.left + r, y); ctx.lineTo(pad.left + bW - r, y);
-          ctx.quadraticCurveTo(pad.left + bW, y, pad.left + bW, y + r);
-          ctx.lineTo(pad.left + bW, y + bH - r);
-          ctx.quadraticCurveTo(pad.left + bW, y + bH, pad.left + bW - r, y + bH);
-          ctx.lineTo(pad.left + r, y + bH); ctx.quadraticCurveTo(pad.left, y + bH, pad.left, y + bH - r);
-          ctx.lineTo(pad.left, y + r); ctx.quadraticCurveTo(pad.left, y, pad.left + r, y);
-          ctx.fill();
-          // label
-          ctx.fillStyle = '#8b8fa8'; ctx.font = '11px DM Sans,sans-serif'; ctx.textAlign = 'right';
-          ctx.fillText(label.length > 12 ? label.substring(0,12)+'…' : label, pad.left - 4, y + bH/2 + 4);
-        } else {
-          const x = pad.left + gi * groupW + barPad + di * barW;
-          const bH = ratio * plotH;
-          const bW = barW - 2;
-          const bY = pad.top + plotH - bH;
-          ctx.beginPath();
-          ctx.moveTo(x + r, bY); ctx.lineTo(x + bW - r, bY);
-          ctx.quadraticCurveTo(x + bW, bY, x + bW, bY + r);
-          ctx.lineTo(x + bW, bY + bH); ctx.lineTo(x, bY + bH); ctx.lineTo(x, bY + r);
-          ctx.quadraticCurveTo(x, bY, x + r, bY);
-          ctx.fill();
-        }
-      });
-      if (!isHoriz) {
-        ctx.fillStyle = '#8b8fa8'; ctx.font = '11px DM Sans,sans-serif'; ctx.textAlign = 'center';
-        const cx = pad.left + gi * groupW + groupW / 2;
-        ctx.fillText(label.length > 8 ? label.substring(0,8)+'…' : label, cx, pad.top + plotH + 18);
-      }
-    });
-    // Legend
-    if (!isHoriz && datasets.length > 1) {
-      let lx = pad.left;
-      datasets.forEach(ds => {
-        const color = Array.isArray(ds.backgroundColor) ? ds.backgroundColor[0] : ds.backgroundColor;
-        ctx.fillStyle = color; ctx.fillRect(lx, 4, 10, 10);
-        ctx.fillStyle = '#8b8fa8'; ctx.font = '10px DM Sans,sans-serif'; ctx.textAlign = 'left';
-        ctx.fillText(ds.label || '', lx + 14, 13);
-        lx += (ds.label||'').length * 6 + 24;
-      });
-    }
-  };
-  Chart.prototype._drawDonut = function() {
-    const cfg = this.config;
-    const data = cfg.data;
-    const canvas = this.canvas;
-    const ctx = this.ctx;
-    const dpr = window.devicePixelRatio || 1;
-    const W = canvas.clientWidth || 140;
-    const H = canvas.clientHeight || 140;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0,0,W,H);
-    const ds = data.datasets[0];
-    const vals = ds.data;
-    const colors = ds.backgroundColor;
-    const total = vals.reduce((s,v)=>s+v,0) || 1;
-    const cx = W/2, cy = H/2, ro = Math.min(W,H)/2 - 4, ri = ro * 0.6;
-    let angle = -Math.PI / 2;
-    vals.forEach((v, i) => {
-      const sweep = (v / total) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(cx + Math.cos(angle)*ro, cy + Math.sin(angle)*ro);
-      ctx.arc(cx, cy, ro, angle, angle + sweep);
-      ctx.arc(cx, cy, ri, angle + sweep, angle, true);
-      ctx.closePath();
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.fill();
-      angle += sweep;
-    });
-    ctx.beginPath(); ctx.arc(cx,cy,ri,0,Math.PI*2); ctx.fillStyle='#11131a'; ctx.fill();
-  };
-  return Chart;
-})();
-
-// ── Minimal PDF Export (text-based, no dependencies) ──
-window.jspdf = {
-jsPDF: function(opts) {
-this._pages = [[]];
-this._page = 0;
-this._y = 20;
-this._font = ‘normal’;
-this._size = 12;
-this._color = [0,0,0];
-this._lineColor = [200,200,200];
-this.lastAutoTable = { finalY: 20 };
-}
-};
-window.jspdf.jsPDF.prototype = {
-setFontSize: function(s){ this._size=s; return this; },
-setFont: function(f,style){ this._font=style||‘normal’; return this; },
-setTextColor: function(r,g,b){ this._color=[r,g,b]; return this; },
-setFillColor: function(r,g,b){ this._fill=[r,g,b]; return this; },
-setDrawColor: function(r,g,b){ this._draw=[r,g,b]; return this; },
-rect: function(){ return this; },
-text: function(txt,x,y,opts){ this._pages[this._page].push({type:‘text’,txt,x,y,size:this._size,font:this._font,color:[…this._color]}); return this; },
-addPage: function(){ this._pages.push([]); this._page++; return this; },
-setPage: function(n){ this._page=n-1; return this; },
-internal: { getNumberOfPages: function(){ return 1; } },
-autoTable: function(opts){
-const page = this._pages[this._page];
-let y = opts.startY || this._y;
-const lm = (opts.margin||{}).left || 15;
-const rm = (opts.margin||{}).right || 15;
-const pageW = 210;
-const cols = opts.head[0];
-const colW = (pageW - lm - rm) / cols.length;
-// header
-page.push({type:‘rect_fill’,x:lm,y:y-5,w:pageW-lm-rm,h:8,color:[79,142,247]});
-cols.forEach((h,i)=>page.push({type:‘text’,txt:String(h),x:lm+i*colW+1,y:y,size:9,font:‘bold’,color:[255,255,255]}));
-y+=6;
-(opts.body||[]).forEach((row,ri)=>{
-if(ri%2===0) page.push({type:‘rect_fill’,x:lm,y:y-4,w:pageW-lm-rm,h:7,color:[240,242,248]});
-row.forEach((cell,i)=>page.push({type:‘text’,txt:String(cell),x:lm+i*colW+1,y:y,size:8,font:‘normal’,color:[30,30,30]}));
-y+=7;
-if(y>270){ this._pages.push([]); this._page++; y=20; }
-});
-this.lastAutoTable={finalY:y+4};
-this._y = y+4;
-return this;
-},
-save: function(filename){
-// Build printable HTML and trigger print
-let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"> <title>${filename}</title> <style> body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#000;} .page{width:210mm;min-height:297mm;padding:15mm;box-sizing:border-box;page-break-after:always;} h1{font-size:22px;color:#0a0b0f;margin-bottom:4px;} h2{font-size:14px;color:#333;margin:16px 0 6px;} .header{background:#0a0b0f;color:white;padding:20px 15mm;margin:-15mm -15mm 15px;} .header h1{color:white;} .header p{color:#aaa;font-size:12px;margin:2px 0;} table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;} th{background:#4f8ef7;color:white;padding:5px 6px;text-align:left;} td{padding:4px 6px;border-bottom:1px solid #eee;} tr:nth-child(even) td{background:#f5f7fa;} .stat{display:inline-block;margin-right:20px;margin-bottom:8px;} .stat-label{font-size:10px;color:#888;text-transform:uppercase;} .stat-value{font-size:18px;font-weight:bold;} .green{color:#16a34a;} .red{color:#dc2626;} .footer{font-size:9px;color:#999;text-align:center;margin-top:20px;} @media print{body{margin:0;} .no-print{display:none;}} </style></head><body>`;
-this._pages.forEach((pg, pi) => {
-html += `<div class="page">`;
-// Group items by y to reconstruct layout
-const textItems = pg.filter(i=>i.type===‘text’);
-const grouped = {};
-textItems.forEach(item=>{
-const ky = Math.round(item.y/3)*3;
-if(!grouped[ky]) grouped[ky]=[];
-grouped[ky].push(item);
-});
-Object.keys(grouped).sort((a,b)=>+a-+b).forEach(y=>{
-const row = grouped[y];
-const item = row[0];
-const isHeader = item.size >= 18;
-const isSub = item.size >= 14;
-const isBold = item.font === ‘bold’;
-const colorStr = item.color ? `rgb(${item.color.join(',')})` : ‘#000’;
-const txt = row.map(r=>r.txt).join(’   ‘);
-if(isHeader) html += `<div class="header"><h1>${txt}</h1>`;
-else if(isSub) html += `<h2>${txt}</h2>`;
-else html += `<div style="font-size:${item.size||10}px;font-weight:${isBold?'bold':'normal'};color:${colorStr};margin:1px 0;">${txt}</div>`;
-});
-// Find tables
-const rects = pg.filter(i=>i.type===‘rect_fill’ && i.color && i.color[0]===79);
-html += `</div>`;
-});
-html += `<script>window.onload=function(){window.print();}<\/script></body></html>`;
-const w = window.open(’’,’_blank’);
-if(w){ w.document.write(html); w.document.close(); }
-else { alert(‘Permita pop-ups para gerar o PDF, ou use o botão de impressão do Safari.’); }
-}
-};
-</script>
-
-<style>
-:root {
-  --bg: #0a0b0f;
-  --bg2: #11131a;
-  --bg3: #181b24;
-  --bg4: #1f2330;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text: #e8eaf0;
-  --text2: #8b8fa8;
-  --text3: #555870;
-  --accent: #4f8ef7;
-  --accent2: #3a7be0;
-  --green: #2dd4a0;
-  --red: #f7645a;
-  --yellow: #f5c842;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --nav-h: 72px;
-  --company-accent: #4f8ef7;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; }
-
-/* SCROLLABLE AREA */
-#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
-#main-content { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: var(--nav-h); }
-#main-content::-webkit-scrollbar { display: none; }
-
-/* TOP BAR */
-#topbar {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(20px);
-}
-#topbar-logo { font-size: 18px; font-weight: 700; color: var(--text); flex-shrink: 0; }
-#topbar-logo span { color: var(--company-accent); }
-#company-selector {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: 30px;
-  padding: 8px 14px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-#company-selector-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--company-accent); flex-shrink: 0; }
-#company-selector-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#company-selector-arrow { color: var(--text3); font-size: 12px; flex-shrink: 0; }
-
-/* BOTTOM NAV */
-#bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  display: flex;
-  z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.nav-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  color: var(--text3);
-  font-size: 11px;
-  font-weight: 500;
-  transition: color 0.2s;
-  border: none;
-  background: none;
-  padding: 8px 4px;
-}
-.nav-btn.active { color: var(--company-accent); }
-.nav-btn svg { width: 22px; height: 22px; }
-.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--company-accent); opacity: 0; margin-top: -2px; }
-.nav-btn.active .nav-dot { opacity: 1; }
-
-/* FAB */
-#fab {
-  position: fixed;
-  bottom: calc(var(--nav-h) + 16px);
-  right: 20px;
-  width: 54px; height: 54px;
-  border-radius: 50%;
-  background: var(--company-accent);
-  border: none;
-  color: white;
-  font-size: 26px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  z-index: 99;
-  transition: transform 0.2s, background 0.3s;
-}
-#fab:active { transform: scale(0.92); }
-
-/* PAGES */
-.page { display: none; padding: 16px; }
-.page.active { display: block; }
-
-/* CARDS */
-.card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 12px;
-}
-.card-sm { padding: 14px; }
-.card-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
-}
-
-/* STAT CARDS */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.stat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-.stat-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
-.stat-value { font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.stat-value.green { color: var(--green); }
-.stat-value.red { color: var(--red); }
-.stat-value.blue { color: var(--accent); }
-.stat-value.yellow { color: var(--yellow); }
-.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
-
-/* COMPANY CARDS */
-.company-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.company-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  cursor: pointer;
-  transition: border-color 0.2s, transform 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.company-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--c-color, #4f8ef7);
-}
-.company-card:active { transform: scale(0.97); }
-.company-card-name { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-.company-card-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-.company-card-row span:first-child { color: var(--text3); }
-.company-card-health {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 20px;
-  margin-top: 8px;
-}
-.health-ok { background: rgba(45,212,160,0.15); color: var(--green); }
-.health-warn { background: rgba(245,200,66,0.15); color: var(--yellow); }
-.health-bad { background: rgba(247,100,90,0.15); color: var(--red); }
-
-/* SECTION TITLE */
-.section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
-  margin-bottom: 10px;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.section-title a { font-size: 12px; color: var(--company-accent); font-weight: 500; cursor: pointer; }
-
-/* TRANSACTION LIST */
-.tx-list { display: flex; flex-direction: column; gap: 8px; }
-.tx-item {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.tx-item:active { background: var(--bg3); }
-.tx-icon {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.tx-icon.in { background: rgba(45,212,160,0.15); }
-.tx-icon.out { background: rgba(247,100,90,0.15); }
-.tx-icon.transfer { background: rgba(79,142,247,0.15); }
-.tx-info { flex: 1; min-width: 0; }
-.tx-desc { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tx-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.tx-right { text-align: right; flex-shrink: 0; }
-.tx-amount { font-size: 15px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.tx-amount.in { color: var(--green); }
-.tx-amount.out { color: var(--red); }
-.tx-amount.transfer { color: var(--accent); }
-.tx-badges { display: flex; gap: 4px; justify-content: flex-end; margin-top: 4px; }
-.badge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 10px;
-  letter-spacing: 0.03em;
-}
-.badge-pending { background: rgba(245,200,66,0.15); color: var(--yellow); }
-.badge-paid { background: rgba(45,212,160,0.12); color: var(--green); }
-.badge-doc { background: rgba(79,142,247,0.12); color: var(--accent); }
-.badge-company { color: white; font-size: 10px; }
-
-/* FILTERS */
-.filter-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  margin-bottom: 14px;
-  scrollbar-width: none;
-}
-.filter-row::-webkit-scrollbar { display: none; }
-.filter-chip {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid var(--border2);
-  background: var(--bg2);
-  color: var(--text2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-}
-.filter-chip.active {
-  background: var(--company-accent);
-  border-color: var(--company-accent);
-  color: white;
-}
-
-/* MODAL */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  display: flex;
-  align-items: flex-end;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal {
-  background: var(--bg2);
-  border-radius: 20px 20px 0 0;
-  border: 1px solid var(--border2);
-  width: 100%;
-  max-height: 92vh;
-  overflow-y: auto;
-  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
-  transform: translateY(40px);
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-}
-.modal-overlay.open .modal { transform: translateY(0); }
-.modal-handle { width: 40px; height: 4px; background: var(--bg4); border-radius: 2px; margin: 0 auto 18px; }
-.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-.modal-close {
-  position: absolute;
-  top: 20px; right: 20px;
-  background: var(--bg3);
-  border: none;
-  color: var(--text2);
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* FORMS */
-.form-group { margin-bottom: 16px; }
-.form-label { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
-.form-input, .form-select, .form-textarea {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 15px;
-  padding: 12px 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--company-accent); }
-.form-textarea { resize: none; min-height: 80px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-select option { background: var(--bg3); }
-.type-toggle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-.type-btn {
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border2);
-  background: var(--bg3);
-  color: var(--text2);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-}
-.type-btn.active-in { background: rgba(45,212,160,0.2); border-color: var(--green); color: var(--green); }
-.type-btn.active-out { background: rgba(247,100,90,0.2); border-color: var(--red); color: var(--red); }
-.type-btn.active-transfer { background: rgba(79,142,247,0.2); border-color: var(--accent); color: var(--accent); }
-
-/* BUTTONS */
-.btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
-}
-.btn:active { transform: scale(0.98); opacity: 0.85; }
-.btn-primary { background: var(--company-accent); color: white; }
-.btn-secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
-.btn-danger { background: rgba(247,100,90,0.2); color: var(--red); border: 1px solid rgba(247,100,90,0.3); }
-.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-
-/* COLOR PICKER */
-.color-picker-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.color-dot {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.color-dot.selected { border-color: white; transform: scale(1.15); }
-
-/* CONTACT LIST */
-.contact-item {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  margin-bottom: 8px;
-}
-.contact-avatar {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: var(--bg4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--company-accent);
-  flex-shrink: 0;
-}
-.contact-info { flex: 1; min-width: 0; }
-.contact-name { font-size: 14px; font-weight: 600; }
-.contact-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.contact-badges { display: flex; gap: 4px; margin-top: 4px; }
-
-/* TABS INTERNAL */
-.inner-tabs { display: flex; gap: 4px; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 16px; }
-.inner-tab {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  background: none;
-  color: var(--text3);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-}
-.inner-tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-
-/* CHART CONTAINER */
-.chart-wrap { position: relative; height: 200px; margin: 4px 0; }
-.chart-wrap-sm { position: relative; height: 160px; }
-
-/* RANKING */
-.rank-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.rank-item:last-child { border: none; }
-.rank-num { font-size: 13px; font-weight: 700; color: var(--text3); width: 20px; text-align: center; flex-shrink: 0; }
-.rank-info { flex: 1; }
-.rank-name { font-size: 13px; font-weight: 500; }
-.rank-sub { font-size: 11px; color: var(--text3); }
-.rank-val { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--green); }
-
-/* TRANSFER ITEM */
-.transfer-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.transfer-item:last-child { border: none; }
-.transfer-arrow { font-size: 14px; color: var(--text3); }
-.transfer-names { flex: 1; }
-.transfer-from { font-size: 13px; font-weight: 500; }
-.transfer-to { font-size: 12px; color: var(--text3); }
-.transfer-amount { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--accent); }
-
-/* DOC PAGE */
-.doc-coverage {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.doc-coverage-bar { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
-.doc-coverage-fill { height: 100%; background: var(--company-accent); border-radius: 3px; transition: width 0.5s; }
-.doc-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-.doc-card:active { background: var(--bg3); }
-.doc-icon { font-size: 24px; flex-shrink: 0; }
-.doc-info { flex: 1; min-width: 0; }
-.doc-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.doc-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
-/* REPORTS */
-.report-section { margin-bottom: 20px; }
-.report-stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-.report-stat-row:last-child { border: none; }
-.report-stat-row.total { font-weight: 700; }
-.report-stat-row.total span:last-child { color: var(--green); }
-
-/* EMPTY STATE */
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
-.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state-title { font-size: 16px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
-.empty-state-sub { font-size: 14px; line-height: 1.5; }
-
-/* PERIOD SELECTOR */
-.period-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.period-selector select { flex: 1; }
-.period-nav { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); padding: 10px 14px; font-size: 16px; cursor: pointer; }
-
-/* COMPANY SELECTOR MODAL */
-.company-select-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  margin-bottom: 6px;
-  transition: background 0.15s;
-}
-.company-select-item:active { background: var(--bg3); }
-.company-select-item.active-item { background: var(--bg3); }
-.company-select-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-.company-select-info { flex: 1; }
-.company-select-name { font-size: 15px; font-weight: 600; }
-.company-select-sub { font-size: 12px; color: var(--text3); }
-.company-select-check { color: var(--company-accent); font-size: 18px; }
-
-/* ACCENT TRANSITIONS */
-* { transition-property: color, background-color, border-color; transition-duration: 0.3s; }
-.tx-item, .company-card, .modal, .modal-overlay, .filter-chip, .nav-btn, .btn { transition-duration: 0.15s; }
-
-/* PERIOD TABS */
-.period-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
-.period-tab {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid var(--border2);
-  background: var(--bg2);
-  color: var(--text3);
-  cursor: pointer;
-}
-.period-tab.active { background: var(--company-accent); border-color: var(--company-accent); color: white; }
-
-/* PROFILE */
-.profile-header {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-.profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--bg4); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--company-accent); flex-shrink: 0; }
-.profile-name { font-size: 18px; font-weight: 700; }
-.profile-meta { font-size: 13px; color: var(--text3); margin-top: 4px; }
-
-/* SEARCH */
-.search-input {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 30px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 14px;
-  padding: 10px 16px 10px 40px;
-  outline: none;
-  margin-bottom: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23555870' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 14px center;
-}
-</style>
-
 </head>
 <body>
 <div id="app">
-  <!-- TOP BAR -->
   <div id="topbar">
-    <div id="topbar-logo">Holding<span>CRM</span></div>
-    <div id="company-selector" onclick="openCompanySelector()">
-      <div id="company-selector-dot"></div>
-      <span id="company-selector-name">Grupo Consolidado</span>
-      <span id="company-selector-arrow">▾</span>
+    <div id="logo">Holding<span>CRM</span></div>
+    <div id="cosel" onclick="openCoSel()">
+      <div id="cosel-dot"></div>
+      <span id="cosel-name">Grupo Consolidado</span>
+      <span style="color:var(--text3);font-size:12px;">▾</span>
     </div>
   </div>
-
-  <!-- MAIN CONTENT -->
-
-  <div id="main-content">
-    <!-- PAGE: GRUPO -->
-    <div id="page-grupo" class="page active">
-      <div id="grupo-content"></div>
-    </div>
-
-```
-<!-- PAGE: FINANCEIRO -->
-<div id="page-financeiro" class="page">
-  <div id="financeiro-content"></div>
-</div>
-
-<!-- PAGE: CONTATOS -->
-<div id="page-contatos" class="page">
-  <div id="contatos-content"></div>
-</div>
-
-<!-- PAGE: DOCUMENTOS -->
-<div id="page-documentos" class="page">
-  <div id="documentos-content"></div>
-</div>
-
-<!-- PAGE: RELATORIOS -->
-<div id="page-relatorios" class="page">
-  <div id="relatorios-content"></div>
-</div>
-```
-
+  <div id="content">
+    <div id="pg-grupo" class="page on"></div>
+    <div id="pg-financeiro" class="page"></div>
+    <div id="pg-contatos" class="page"></div>
+    <div id="pg-documentos" class="page"></div>
+    <div id="pg-relatorios" class="page"></div>
   </div>
-
-  <!-- FAB -->
-
-<button id="fab" onclick="openNewTransaction()">+</button>
-
-  <!-- BOTTOM NAV -->
-
-  <nav id="bottom-nav">
-    <button class="nav-btn active" onclick="switchPage('grupo', this)">
+  <button id="fab" onclick="openTxModal()">+</button>
+  <nav id="nav">
+    <button class="nb on" onclick="goPage('grupo',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Grupo
-      <div class="nav-dot"></div>
+      Grupo<div class="ndot"></div>
     </button>
-    <button class="nav-btn" onclick="switchPage('financeiro', this)">
+    <button class="nb" onclick="goPage('financeiro',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Financeiro
-      <div class="nav-dot"></div>
+      Financeiro<div class="ndot"></div>
     </button>
-    <button class="nav-btn" onclick="switchPage('contatos', this)">
+    <button class="nb" onclick="goPage('contatos',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Contatos
-      <div class="nav-dot"></div>
+      Contatos<div class="ndot"></div>
     </button>
-    <button class="nav-btn" onclick="switchPage('documentos', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
-      Docs
-      <div class="nav-dot"></div>
+    <button class="nb" onclick="goPage('documentos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      Docs<div class="ndot"></div>
     </button>
-    <button class="nav-btn" onclick="switchPage('relatorios', this)">
+    <button class="nb" onclick="goPage('relatorios',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Relatórios
-      <div class="nav-dot"></div>
+      Relatórios<div class="ndot"></div>
     </button>
   </nav>
 </div>
-
-<!-- MODALS CONTAINER -->
-
 <div id="modals"></div>
 
 <script>
-// ============================================================
-// DATA LAYER
-// ============================================================
+// ── DATA ──────────────────────────────────────────────────
 const COLORS = ['#4f8ef7','#2dd4a0','#f5c842','#f7645a','#a78bfa','#fb923c'];
-const COLOR_NAMES = ['Azul','Verde','Amarelo','Vermelho','Roxo','Laranja'];
+let DB, curCo = 'consolidated', curPage = 'grupo';
+let txFilter = 'all', txPeriod = 'month', ctTab = 'global', ctFilter = 'all';
+let repCo = 'consolidated', repMonth = new Date().getMonth(), repYear = new Date().getFullYear();
 
-function loadData() {
-  const d = localStorage.getItem('holdingcrm_v1');
-  if (d) return JSON.parse(d);
+function loadDB() {
+  try {
+    const d = localStorage.getItem('hcrm2');
+    if (d) return JSON.parse(d);
+  } catch(e) {}
   return null;
 }
-function saveData() {
-  localStorage.setItem('holdingcrm_v1', JSON.stringify(DB));
+function saveDB() {
+  try { localStorage.setItem('hcrm2', JSON.stringify(DB)); } catch(e) {}
+}
+function genId() { return 't' + Date.now() + Math.random().toString(36).slice(2,6); }
+function daysAgo(n) {
+  const d = new Date(); d.setDate(d.getDate()-n);
+  return d.toISOString().split('T')[0];
 }
 
 function initDB() {
-  const now = new Date();
-  const m = now.getMonth();
-  const y = now.getFullYear();
-  const fmt = (d) => d.toISOString().split('T')[0];
-  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate()-n); return fmt(d); };
-
   DB = {
     holding: { name: 'Grupo Visão Holding', cnpj: '00.000.000/0001-00' },
     companies: [
       { id: 'c1', name: 'Visão Tech', cnpj: '11.111.111/0001-11', segment: 'Tecnologia', color: COLORS[0] },
       { id: 'c2', name: 'Visão Imóveis', cnpj: '22.222.222/0001-22', segment: 'Imobiliário', color: COLORS[1] },
-      { id: 'c3', name: 'Visão Serviços', cnpj: '33.333.333/0001-33', segment: 'Serviços', color: COLORS[2] },
     ],
-    globalCategories: ['Impostos','Salários','Receita Operacional','Dividendos','Investimentos','Transferência Interna'],
-    companyCategories: {
-      c1: ['Software','Cloud','Licenças','Desenvolvimento'],
-      c2: ['Aluguéis','Manutenção','Comissões','IPTU'],
-      c3: ['Consultoria','Material de Escritório','Marketing'],
-    },
+    globalCats: ['Impostos','Salários','Receita Operacional','Dividendos','Transferência Interna'],
+    companyCats: { c1: ['Software','Cloud','Licenças'], c2: ['Aluguéis','Manutenção','IPTU'] },
     globalContacts: [
-      { id: 'gc1', name: 'Contador Silva', type: 'Fornecedor', cnpj: '44.444.444/0001-44', phone: '(11) 99999-0001', email: 'contador@silva.com', scope: 'global' },
-      { id: 'gc2', name: 'Banco do Brasil', type: 'Fornecedor', cnpj: '00.000.000/0001-91', phone: '4004-0001', email: '', scope: 'global' },
-      { id: 'gc3', name: 'João Empresário', type: 'Cliente', cnpj: '55.555.555/0001-55', phone: '(11) 98888-1234', email: 'joao@empresa.com', scope: 'global' },
+      { id: 'gc1', name: 'Contador Silva', type: 'Fornecedor', cnpj: '', phone: '(11) 99999-0001', email: 'contador@silva.com', scope: 'global' },
+      { id: 'gc2', name: 'João Empresário', type: 'Cliente', cnpj: '', phone: '(11) 98888-1234', email: 'joao@emp.com', scope: 'global' },
     ],
-    companyContacts: {
-      c1: [
-        { id: 'cc1_1', name: 'AWS Brazil', type: 'Fornecedor', cnpj: '77.777.777/0001-77', phone: '', email: 'aws@aws.com', scope: 'c1' },
-        { id: 'cc1_2', name: 'Startup XYZ', type: 'Cliente', cnpj: '88.888.888/0001-88', phone: '(21) 97777-5555', email: 'contact@xyz.com', scope: 'c1' },
-      ],
-      c2: [
-        { id: 'cc2_1', name: 'Imobiliária Norte', type: 'Parceiro', cnpj: '66.666.666/0001-66', phone: '(11) 3333-4444', email: 'norte@imob.com', scope: 'c2' },
-      ],
-      c3: [
-        { id: 'cc3_1', name: 'Gráfica Express', type: 'Fornecedor', cnpj: '99.999.999/0001-99', phone: '(11) 4444-5555', email: 'grafica@express.com', scope: 'c3' },
-      ],
+    companyCts: {
+      c1: [{ id: 'cc1', name: 'AWS Brasil', type: 'Fornecedor', cnpj: '', phone: '', email: '', scope: 'c1' }],
+      c2: [{ id: 'cc2', name: 'Imobiliária Norte', type: 'Parceiro', cnpj: '', phone: '', email: '', scope: 'c2' }],
     },
-    transactions: [
-      // c1 transactions
-      {id:'t1',company:'c1',date:daysAgo(2),desc:'Contrato de Software - Startup XYZ',amount:15000,type:'in',category:'Software',contact:'cc1_2',status:'paid',doc:'',notes:''},
-      {id:'t2',company:'c1',date:daysAgo(5),desc:'Serviço AWS Cloud',amount:2800,type:'out',category:'Cloud',contact:'cc1_1',status:'paid',doc:'https://onedrive.example.com/doc1',notes:''},
-      {id:'t3',company:'c1',date:daysAgo(8),desc:'Salários Equipe Dev',amount:18000,type:'out',category:'Salários',contact:'',status:'paid',doc:'https://onedrive.example.com/doc2',notes:''},
-      {id:'t4',company:'c1',date:daysAgo(12),desc:'Licença Microsoft 365',amount:890,type:'out',category:'Licenças',contact:'',status:'paid',doc:'',notes:''},
-      {id:'t5',company:'c1',date:daysAgo(15),desc:'Projeto de Desenvolvimento Web',amount:22000,type:'in',category:'Desenvolvimento',contact:'gc3',status:'paid',doc:'https://onedrive.example.com/doc3',notes:''},
-      {id:'t6',company:'c1',date:daysAgo(20),desc:'Impostos ISS',amount:1200,type:'out',category:'Impostos',contact:'gc1',status:'paid',doc:'',notes:''},
-      // c2 transactions
-      {id:'t7',company:'c2',date:daysAgo(3),desc:'Aluguel Apto 302 - Torre A',amount:3500,type:'in',category:'Aluguéis',contact:'gc3',status:'paid',doc:'https://onedrive.example.com/doc4',notes:''},
-      {id:'t8',company:'c2',date:daysAgo(6),desc:'Aluguel Sala Comercial',amount:5800,type:'in',category:'Aluguéis',contact:'cc2_1',status:'paid',doc:'https://onedrive.example.com/doc5',notes:''},
-      {id:'t9',company:'c2',date:daysAgo(9),desc:'Manutenção Elevadores',amount:1200,type:'out',category:'Manutenção',contact:'',status:'paid',doc:'',notes:''},
-      {id:'t10',company:'c2',date:daysAgo(14),desc:'IPTU Imóvel Central',amount:3200,type:'out',category:'IPTU',contact:'',status:'paid',doc:'https://onedrive.example.com/doc6',notes:''},
-      {id:'t11',company:'c2',date:daysAgo(18),desc:'Comissão Venda Apto 501',amount:8500,type:'in',category:'Comissões',contact:'cc2_1',status:'pending',doc:'',notes:''},
-      {id:'t12',company:'c2',date:daysAgo(22),desc:'Salários Equipe',amount:9000,type:'out',category:'Salários',contact:'',status:'paid',doc:'',notes:''},
-      // c3 transactions
-      {id:'t13',company:'c3',date:daysAgo(1),desc:'Consultoria Financeira',amount:4500,type:'in',category:'Consultoria',contact:'gc3',status:'paid',doc:'https://onedrive.example.com/doc7',notes:''},
-      {id:'t14',company:'c3',date:daysAgo(7),desc:'Material de Escritório',amount:450,type:'out',category:'Material de Escritório',contact:'cc3_1',status:'paid',doc:'',notes:''},
-      {id:'t15',company:'c3',date:daysAgo(11),desc:'Campanha Marketing Digital',amount:2200,type:'out',category:'Marketing',contact:'',status:'paid',doc:'https://onedrive.example.com/doc8',notes:''},
-      {id:'t16',company:'c3',date:daysAgo(16),desc:'Consultoria RH Mensal',amount:3800,type:'in',category:'Consultoria',contact:'gc3',status:'paid',doc:'',notes:''},
-      {id:'t17',company:'c3',date:daysAgo(19),desc:'Salários',amount:7500,type:'out',category:'Salários',contact:'',status:'paid',doc:'',notes:''},
-      {id:'t18',company:'c3',date:daysAgo(25),desc:'Impostos Competência',amount:620,type:'out',category:'Impostos',contact:'gc1',status:'paid',doc:'',notes:''},
-      // transfers
-      {id:'tr1',company:'c1',date:daysAgo(10),desc:'Transferência para Visão Serviços',amount:5000,type:'transfer',category:'Transferência Interna',contact:'',status:'paid',doc:'',notes:'',transferTo:'c3'},
-      {id:'tr2',company:'c2',date:daysAgo(20),desc:'Transferência para Visão Tech',amount:3000,type:'transfer',category:'Transferência Interna',contact:'',status:'paid',doc:'',notes:'',transferTo:'c1'},
+    txs: [
+      {id:'t1',co:'c1',date:daysAgo(2),desc:'Contrato Software - Cliente XYZ',amt:15000,type:'in',cat:'Software',ctid:'gc2',status:'paid',doc:''},
+      {id:'t2',co:'c1',date:daysAgo(5),desc:'Serviço AWS Cloud',amt:2800,type:'out',cat:'Cloud',ctid:'cc1',status:'paid',doc:'https://drive.google.com/exemplo'},
+      {id:'t3',co:'c1',date:daysAgo(8),desc:'Salários Equipe',amt:18000,type:'out',cat:'Salários',ctid:'',status:'paid',doc:''},
+      {id:'t4',co:'c1',date:daysAgo(15),desc:'Projeto Web - João',amt:22000,type:'in',cat:'Receita Operacional',ctid:'gc2',status:'paid',doc:'https://drive.google.com/exemplo2'},
+      {id:'t5',co:'c1',date:daysAgo(20),desc:'Impostos ISS',amt:1200,type:'out',cat:'Impostos',ctid:'gc1',status:'paid',doc:''},
+      {id:'t6',co:'c2',date:daysAgo(3),desc:'Aluguel Apto 302',amt:3500,type:'in',cat:'Aluguéis',ctid:'gc2',status:'paid',doc:'https://drive.google.com/exemplo3'},
+      {id:'t7',co:'c2',date:daysAgo(6),desc:'Aluguel Sala Comercial',amt:5800,type:'in',cat:'Aluguéis',ctid:'',status:'paid',doc:''},
+      {id:'t8',co:'c2',date:daysAgo(10),desc:'Manutenção Elevadores',amt:1200,type:'out',cat:'Manutenção',ctid:'',status:'paid',doc:''},
+      {id:'t9',co:'c2',date:daysAgo(14),desc:'IPTU Imóvel Central',amt:3200,type:'out',cat:'IPTU',ctid:'',status:'paid',doc:''},
+      {id:'t10',co:'c2',date:daysAgo(18),desc:'Salários Equipe',amt:9000,type:'out',cat:'Salários',ctid:'',status:'paid',doc:''},
+      {id:'tr1',co:'c1',date:daysAgo(10),desc:'Transferência para Visão Imóveis',amt:5000,type:'transfer',cat:'Transferência Interna',ctid:'',status:'paid',doc:'',toId:'c2'},
     ],
-    nextId: 100,
+    nextId: 200,
   };
-  saveData();
+  saveDB();
 }
 
-let DB;
-const loaded = loadData();
-if (loaded) { DB = loaded; } else { initDB(); }
+const loaded = loadDB();
+if (loaded && loaded.companies) { DB = loaded; } else { initDB(); }
 
-// ============================================================
-// STATE
-// ============================================================
-let currentCompany = 'consolidated'; // 'consolidated' or company id
-let currentPage = 'grupo';
-let txFilter = 'all'; // all, in, out, transfer
-let txPeriod = 'month'; // month, quarter, year, all
-let contactTab = 'global';
-let contactFilter = 'all';
-let reportCompany = 'consolidated';
-let reportPeriod = { month: new Date().getMonth(), year: new Date().getFullYear() };
-let charts = {};
-
-// ============================================================
-// HELPERS
-// ============================================================
-function fmt(n) {
-  return 'R$ ' + Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtShort(n) {
-  if (Math.abs(n) >= 1000000) return 'R$ ' + (n/1000000).toFixed(1) + 'M';
-  if (Math.abs(n) >= 1000) return 'R$ ' + (n/1000).toFixed(0) + 'K';
+// ── HELPERS ──────────────────────────────────────────────
+function fmt(n) { return 'R$\u00a0' + Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtS(n) {
+  const a = Math.abs(n);
+  if (a >= 1000000) return 'R$\u00a0' + (n/1000000).toFixed(1) + 'M';
+  if (a >= 1000) return 'R$\u00a0' + (n/1000).toFixed(0) + 'K';
   return fmt(n);
 }
-function fmtDate(str) {
-  if (!str) return '';
-  const [y,m,d] = str.split('-');
-  return `${d}/${m}/${y}`;
-}
-function getCompany(id) { return DB.companies.find(c => c.id === id); }
-function getCompanyColor(id) {
-  const c = getCompany(id);
-  return c ? c.color : '#4f8ef7';
-}
-function getContact(id) {
+function fmtD(s) { if (!s) return ''; const [y,m,d] = s.split('-'); return d+'/'+m+'/'+y; }
+function getCo(id) { return DB.companies.find(c => c.id === id); }
+function getCoColor(id) { const c = getCo(id); return c ? c.color : '#4f8ef7'; }
+function getCt(id) {
   if (!id) return null;
-  const gc = DB.globalContacts.find(c => c.id === id);
-  if (gc) return gc;
-  for (const cid in DB.companyContacts) {
-    const cc = DB.companyContacts[cid].find(c => c.id === id);
-    if (cc) return cc;
+  const g = DB.globalContacts.find(c => c.id === id);
+  if (g) return g;
+  for (const cid in DB.companyCts) {
+    const f = DB.companyCts[cid].find(c => c.id === id);
+    if (f) return f;
   }
   return null;
 }
-function getContactName(id) {
-  const c = getContact(id);
-  return c ? c.name : '';
-}
-function initials(name) {
-  return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-}
-function genId() { return 'id_' + (DB.nextId++); }
-function getPeriodDates(p) {
+function getCtName(id) { const c = getCt(id); return c ? c.name : ''; }
+function initials(name) { return (name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function periodDates(p) {
   const now = new Date();
-  if (p === 'month') {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
-    return [start, end];
-  }
-  if (p === 'quarter') {
-    const q = Math.floor(now.getMonth()/3);
-    const start = new Date(now.getFullYear(), q*3, 1);
-    const end = new Date(now.getFullYear(), q*3+3, 0);
-    return [start, end];
-  }
-  if (p === 'year') {
-    return [new Date(now.getFullYear(),0,1), new Date(now.getFullYear(),11,31)];
-  }
+  if (p === 'month') { const s = new Date(now.getFullYear(),now.getMonth(),1); const e = new Date(now.getFullYear(),now.getMonth()+1,0); return [s,e]; }
+  if (p === 'quarter') { const q = Math.floor(now.getMonth()/3); return [new Date(now.getFullYear(),q*3,1), new Date(now.getFullYear(),q*3+3,0)]; }
+  if (p === 'year') return [new Date(now.getFullYear(),0,1), new Date(now.getFullYear(),11,31)];
   return [new Date('2000-01-01'), new Date('2099-12-31')];
 }
-function filterByPeriod(txs, period) {
-  const [start, end] = getPeriodDates(period);
-  return txs.filter(t => { const d = new Date(t.date); return d >= start && d <= end; });
+function inPeriod(t, p) { const [s,e] = periodDates(p); const d = new Date(t.date); return d >= s && d <= e; }
+function stats(txs) {
+  let inc = 0, exp = 0;
+  txs.forEach(t => { if (t.type === 'in') inc += t.amt; else if (t.type === 'out') exp += t.amt; });
+  return { inc, exp, bal: inc - exp };
 }
-function getCompanyTxs(cid) { return DB.transactions.filter(t => t.company === cid); }
-function calcStats(txs) {
-  let income = 0, expense = 0;
-  txs.forEach(t => {
-    if (t.type === 'in') income += t.amount;
-    else if (t.type === 'out') expense += t.amount;
-  });
-  return { income, expense, balance: income - expense };
+function getCats(cid) { return [...(DB.globalCats||[]), ...(DB.companyCats[cid]||[])]; }
+function getAllCts(cid) { return [...(DB.globalContacts||[]), ...(DB.companyCts[cid]||[])]; }
+function setAccent(color) { document.documentElement.style.setProperty('--accent', color); }
+function updateAccent() { setAccent(curCo === 'consolidated' ? '#4f8ef7' : getCoColor(curCo)); }
+function updateTopbar() {
+  const dot = document.getElementById('cosel-dot');
+  const name = document.getElementById('cosel-name');
+  if (!dot || !name) return;
+  if (curCo === 'consolidated') { dot.style.background = '#4f8ef7'; name.textContent = 'Grupo Consolidado'; }
+  else { const c = getCo(curCo); if (c) { dot.style.background = c.color; name.textContent = c.name; } }
 }
-function healthClass(balance) {
-  if (balance > 0) return 'health-ok';
-  if (balance === 0) return 'health-warn';
-  return 'health-bad';
-}
-function healthLabel(balance) {
-  if (balance > 0) return '🟢 Saudável';
-  if (balance === 0) return '🟡 Neutro';
-  return '🔴 Negativo';
-}
-function getCategories(cid) {
-  const specific = DB.companyCategories[cid] || [];
-  return [...DB.globalCategories, ...specific];
-}
-function getAllContacts(cid) {
-  const specific = DB.companyContacts[cid] || [];
-  return [...DB.globalContacts, ...specific];
-}
-function setAccentColor(color) {
-  document.documentElement.style.setProperty('--company-accent', color);
-}
-function updateAccent() {
-  if (currentCompany === 'consolidated') {
-    setAccentColor('#4f8ef7');
-  } else {
-    setAccentColor(getCompanyColor(currentCompany));
-  }
-}
+function healthCls(b) { return b > 0 ? 'hok' : b < 0 ? 'hbad' : 'hwarn'; }
+function healthLbl(b) { return b > 0 ? '🟢 Saudável' : b < 0 ? '🔴 Negativo' : '🟡 Neutro'; }
+function escape(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
-function switchPage(page, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  if (btn) btn.classList.add('active');
-  currentPage = page;
-  // show/hide FAB
-  document.getElementById('fab').style.display = (page === 'financeiro') ? 'flex' : 'none';
+// ── NAVIGATION ────────────────────────────────────────────
+function goPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  const pg = document.getElementById('pg-'+page);
+  if (pg) pg.classList.add('on');
+  if (btn) btn.classList.add('on');
+  curPage = page;
+  const fab = document.getElementById('fab');
+  if (fab) fab.style.display = page === 'financeiro' ? 'flex' : 'none';
   renderPage(page);
 }
-
 function renderPage(page) {
   try {
     if (page === 'grupo') renderGrupo();
-    else if (page === 'financeiro') renderFinanceiro();
-    else if (page === 'contatos') renderContatos();
-    else if (page === 'documentos') renderDocumentos();
-    else if (page === 'relatorios') renderRelatorios();
+    else if (page === 'financeiro') renderFin();
+    else if (page === 'contatos') renderCts();
+    else if (page === 'documentos') renderDocs();
+    else if (page === 'relatorios') renderRep();
   } catch(e) {
-    const container = document.getElementById('page-' + page);
-    if (container) container.innerHTML = '<div style="padding:20px;color:#f7645a;font-size:13px;background:#1f1010;border-radius:8px;margin:16px;">Erro: ' + e.message + '<br><small>' + e.stack + '</small></div>';
-    console.error('renderPage error:', e);
+    const el = document.getElementById('pg-'+page);
+    if (el) el.innerHTML = '<div style="padding:20px;color:#f7645a;background:#1a0a0a;border-radius:8px;margin:16px;font-size:13px;word-break:break-all;">Erro: '+escape(e.message)+'</div>';
   }
 }
+function refresh() { renderPage(curPage); }
 
-function refreshCurrentPage() { renderPage(currentPage); }
-
-// ============================================================
-// COMPANY SELECTOR
-// ============================================================
-function updateTopbar() {
-  const dot = document.getElementById('company-selector-dot');
-  const name = document.getElementById('company-selector-name');
-  if (currentCompany === 'consolidated') {
-    dot.style.background = '#4f8ef7';
-    name.textContent = 'Grupo Consolidado';
-  } else {
-    const c = getCompany(currentCompany);
-    dot.style.background = c.color;
-    name.textContent = c.name;
-  }
-}
-
-function openCompanySelector() {
+// ── COMPANY SELECTOR ─────────────────────────────────────
+function openCoSel() {
   const items = [
     { id: 'consolidated', name: 'Grupo Consolidado', sub: DB.holding.name, color: '#4f8ef7' },
     ...DB.companies.map(c => ({ id: c.id, name: c.name, sub: c.segment, color: c.color }))
   ];
-  const html = `
-    <div class="modal-handle"></div>
-    <div class="modal-title">Selecionar Empresa</div>
-    ${items.map(item => `
-      <div class="company-select-item ${currentCompany === item.id ? 'active-item' : ''}" onclick="selectCompany('${item.id}')">
-        <div class="company-select-dot" style="background:${item.color}"></div>
-        <div class="company-select-info">
-          <div class="company-select-name">${item.name}</div>
-          <div class="company-select-sub">${item.sub}</div>
-        </div>
-        ${currentCompany === item.id ? '<div class="company-select-check">✓</div>' : ''}
-      </div>
-    `).join('')}
-    <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
-      <div class="company-select-item" onclick="closeModal(); openNewCompany();" style="color: var(--company-accent)">
-        <div style="font-size:20px;">+</div>
-        <div class="company-select-info">
-          <div class="company-select-name" style="color:var(--company-accent)">Nova Empresa Filha</div>
-        </div>
-      </div>
-    </div>
-  `;
+  let html = '<div class="mh"></div><div class="mt">Selecionar Empresa</div>';
+  items.forEach(item => {
+    html += `<div class="csitem ${curCo===item.id?'cur':''}" onclick="selectCo('${item.id}')">
+      <div class="csdot" style="background:${item.color}"></div>
+      <div><div class="csname">${escape(item.name)}</div><div class="cssub">${escape(item.sub)}</div></div>
+      ${curCo===item.id?'<span style="color:var(--accent);margin-left:auto;">✓</span>':''}
+    </div>`;
+  });
+  html += `<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+    <div class="csitem" onclick="closeModal();openCoModal()"><div style="font-size:20px;color:var(--accent);">+</div><div class="csname" style="color:var(--accent)">Nova Empresa Filha</div></div>
+  </div>`;
   showModal(html);
 }
+function selectCo(id) { curCo = id; updateAccent(); updateTopbar(); closeModal(); refresh(); }
 
-function selectCompany(id) {
-  currentCompany = id;
-  updateAccent();
-  updateTopbar();
-  closeModal();
-  refreshCurrentPage();
-}
-
-// ============================================================
-// GRUPO PAGE
-// ============================================================
+// ── GRUPO PAGE ────────────────────────────────────────────
 function renderGrupo() {
-  const container = document.getElementById('grupo-content');
-  if (!container) return;
-  const period = 'month';
-  const allTxs = DB.transactions.filter(t => t.type !== 'transfer');
-  const monthTxs = filterByPeriod(allTxs, 'month');
-  const globalStats = calcStats(monthTxs);
-  const margin = globalStats.income > 0 ? ((globalStats.balance / globalStats.income)*100).toFixed(1) : '0.0';
+  const el = document.getElementById('pg-grupo');
+  const allTxs = DB.txs.filter(t => t.type !== 'transfer');
+  const mTxs = allTxs.filter(t => inPeriod(t, 'month'));
+  const gs = stats(mTxs);
+  const margin = gs.inc > 0 ? ((gs.bal/gs.inc)*100).toFixed(1) : '0.0';
 
-  // Company stats
-  const companyStats = DB.companies.map(c => {
-    const txs = filterByPeriod(getCompanyTxs(c.id).filter(t => t.type !== 'transfer'), 'month');
-    return { ...c, ...calcStats(txs) };
+  const coStats = DB.companies.map(c => {
+    const t = DB.txs.filter(tx => tx.co === c.id && tx.type !== 'transfer' && inPeriod(tx,'month'));
+    return { ...c, ...stats(t) };
   });
 
-  // Transfers
-  const transfers = DB.transactions.filter(t => t.type === 'transfer');
-  const recentTransfers = filterByPeriod(transfers, 'month').slice(-3);
+  const transfers = DB.txs.filter(t => t.type === 'transfer' && inPeriod(t,'month'));
 
   // Rankings
-  const catTotals = {};
-  monthTxs.filter(t => t.type === 'out').forEach(t => {
-    catTotals[t.category] = (catTotals[t.category]||0) + t.amount;
+  const catTot = {}, ctIn = {}, ctOut = {};
+  mTxs.forEach(t => {
+    if (t.type === 'out') catTot[t.cat] = (catTot[t.cat]||0) + t.amt;
+    if (t.type === 'in' && t.ctid) ctIn[t.ctid] = (ctIn[t.ctid]||0) + t.amt;
+    if (t.type === 'out' && t.ctid) ctOut[t.ctid] = (ctOut[t.ctid]||0) + t.amt;
   });
-  const topCats = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const topCats = Object.entries(catTot).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const topCli = Object.entries(ctIn).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const topSup = Object.entries(ctOut).sort((a,b)=>b[1]-a[1]).slice(0,3);
 
-  const clientTotals = {};
-  monthTxs.filter(t => t.type === 'in' && t.contact).forEach(t => {
-    clientTotals[t.contact] = (clientTotals[t.contact]||0) + t.amount;
-  });
-  const topClients = Object.entries(clientTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
-
-  const supplierTotals = {};
-  monthTxs.filter(t => t.type === 'out' && t.contact).forEach(t => {
-    supplierTotals[t.contact] = (supplierTotals[t.contact]||0) + t.amount;
-  });
-  const topSuppliers = Object.entries(supplierTotals).sort((a,b)=>b[1]-a[1]).slice(0,3);
-
-  container.innerHTML = `
-    <!-- CONSOLIDATED SUMMARY -->
-    <div class="card" style="margin-bottom:12px; background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);">
-      <div class="card-title">Consolidado do Mês</div>
-      <div class="stats-grid" style="margin-bottom:10px;">
-        <div class="stat-card"><div class="stat-label">Receita Total</div><div class="stat-value green">${fmtShort(globalStats.income)}</div></div>
-        <div class="stat-card"><div class="stat-label">Despesa Total</div><div class="stat-value red">${fmtShort(globalStats.expense)}</div></div>
-        <div class="stat-card"><div class="stat-label">Resultado Líquido</div><div class="stat-value ${globalStats.balance >= 0 ? 'green' : 'red'}">${fmtShort(globalStats.balance)}</div></div>
-        <div class="stat-card"><div class="stat-label">Margem %</div><div class="stat-value blue">${margin}%</div></div>
+  el.innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,var(--bg2),var(--bg3))">
+      <div class="ct">Consolidado do Mês</div>
+      <div class="sgrid">
+        <div class="sc"><div class="sl">Receita Total</div><div class="sv g">${fmtS(gs.inc)}</div></div>
+        <div class="sc"><div class="sl">Despesa Total</div><div class="sv r">${fmtS(gs.exp)}</div></div>
+        <div class="sc"><div class="sl">Resultado</div><div class="sv ${gs.bal>=0?'g':'r'}">${fmtS(gs.bal)}</div></div>
+        <div class="sc"><div class="sl">Margem</div><div class="sv b">${margin}%</div></div>
       </div>
     </div>
 
-    <!-- COMPANY CARDS -->
-    <div class="section-title">Empresas do Grupo</div>
-    <div class="company-cards-grid">
-      ${companyStats.map(c => `
-        <div class="company-card" style="--c-color:${c.color}" onclick="selectCompany('${c.id}')">
-          <div class="company-card-name">${c.name}</div>
-          <div class="company-card-row"><span>Receita</span><span style="color:var(--green)">${fmtShort(c.income)}</span></div>
-          <div class="company-card-row"><span>Despesa</span><span style="color:var(--red)">${fmtShort(c.expense)}</span></div>
-          <div class="company-card-row"><span>Saldo</span><span style="color:${c.balance>=0?'var(--green)':'var(--red);font-weight:700'}">${fmtShort(c.balance)}</span></div>
-          <div class="company-card-health ${healthClass(c.balance)}">${healthLabel(c.balance)}</div>
+    <div class="stitle">Empresas do Grupo <button onclick="openCoModal()">+ Nova</button></div>
+    <div class="cgrid">
+      ${coStats.map(c => `
+        <div class="ccard" style="--cc:${c.color}" onclick="selectCo('${c.id}')">
+          <div class="cn">${escape(c.name)}</div>
+          <div class="cr"><span>Receita</span><span style="color:var(--green)">${fmtS(c.inc)}</span></div>
+          <div class="cr"><span>Despesa</span><span style="color:var(--red)">${fmtS(c.exp)}</span></div>
+          <div class="cr"><span>Saldo</span><span style="color:${c.bal>=0?'var(--green)':'var(--red)'}">${fmtS(c.bal)}</span></div>
+          <div class="hbadge ${healthCls(c.bal)}">${healthLbl(c.bal)}</div>
         </div>
       `).join('')}
-      <div class="company-card" style="--c-color:#555870; border-style: dashed; display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text3)" onclick="openNewCompany()">
-        <div style="font-size:28px;">+</div>
-        <div style="font-size:13px;font-weight:600;">Nova Filha</div>
+      <div class="ccard" style="--cc:#555870;border-style:dashed;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--text3)" onclick="openCoModal()">
+        <div style="font-size:28px">+</div><div style="font-size:13px;font-weight:600">Nova Filha</div>
       </div>
     </div>
 
-    <!-- COMPARATIVE CHART -->
     <div class="card">
-      <div class="card-title">Receita vs Despesa por Empresa</div>
-      <div class="chart-wrap"><canvas id="chart-compare"></canvas></div>
+      <div class="ct">Receita vs Despesa</div>
+      ${coStats.map(c => `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span style="font-weight:600">${escape(c.name)}</span>
+            <span style="color:${c.bal>=0?'var(--green)':'var(--red)'};">${fmtS(c.bal)}</span>
+          </div>
+          <div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:2px">
+            <div style="height:100%;width:${c.inc>0?'100%':'0'};background:${c.color};border-radius:4px;opacity:.7"></div>
+          </div>
+          <div style="display:flex;gap:16px;font-size:11px;color:var(--text3)">
+            <span>🟢 ${fmtS(c.inc)}</span><span>🔴 ${fmtS(c.exp)}</span>
+          </div>
+        </div>
+      `).join('')}
     </div>
 
-    <!-- DONUT CHART -->
     <div class="card">
-      <div class="card-title">Participação na Receita do Grupo</div>
-      <div style="display:flex;gap:16px;align-items:center;">
-        <div style="width:140px;height:140px;flex-shrink:0;"><canvas id="chart-donut"></canvas></div>
-        <div id="donut-legend" style="flex:1;"></div>
-      </div>
-    </div>
-
-    <!-- TRANSFERS -->
-    <div class="card">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="ct" style="display:flex;justify-content:space-between;align-items:center">
         <span>Transferências Intercompany</span>
-        <button onclick="openTransfer()" style="background:var(--company-accent);color:white;border:none;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">Nova</button>
+        <button onclick="openTransfer()" style="background:var(--accent);color:white;border:none;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer">Nova</button>
       </div>
-      ${recentTransfers.length === 0 ? '<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px;">Nenhuma transferência no mês</div>' :
-        recentTransfers.map(t => {
-          const fromC = getCompany(t.company);
-          const toC = getCompany(t.transferTo || '');
-          return `<div class="transfer-item">
-            <div style="width:10px;height:10px;border-radius:50%;background:${fromC?.color||'#999'};flex-shrink:0;"></div>
-            <div class="transfer-names">
-              <div class="transfer-from">${fromC?.name||'?'} <span style="color:var(--text3)">→</span> ${toC?.name||'?'}</div>
-              <div class="transfer-to">${fmtDate(t.date)} · ${t.desc}</div>
+      ${transfers.length === 0 ? '<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px">Nenhuma transferência no mês</div>' :
+        transfers.map(t => {
+          const fc = getCo(t.co); const tc = getCo(t.toId||'');
+          return `<div class="tritem">
+            <div style="width:10px;height:10px;border-radius:50%;background:${fc?.color||'#999'};flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500">${escape(fc?.name||'?')} → ${escape(tc?.name||'?')}</div>
+              <div style="font-size:11px;color:var(--text3)">${fmtD(t.date)} · ${escape(t.desc)}</div>
             </div>
-            <div class="transfer-amount">${fmt(t.amount)}</div>
+            <div style="font-size:14px;font-weight:700;font-family:monospace;color:var(--accent)">${fmt(t.amt)}</div>
           </div>`;
         }).join('')}
     </div>
 
-    <!-- RANKINGS -->
-    <div class="section-title">Rankings do Mês</div>
+    <div class="stitle">Rankings do Mês</div>
     <div class="card card-sm">
-      <div class="card-title">🔴 Top Despesas por Categoria</div>
-      ${topCats.map(([cat,val],i) => `<div class="rank-item"><div class="rank-num">${i+1}</div><div class="rank-info"><div class="rank-name">${cat}</div></div><div class="rank-val" style="color:var(--red)">${fmt(val)}</div></div>`).join('') || '<div style="color:var(--text3);font-size:13px;">Sem dados</div>'}
+      <div class="ct">🔴 Top Despesas</div>
+      ${topCats.map(([cat,val],i)=>`<div class="si"><span style="color:var(--text3);width:20px;text-align:center;flex-shrink:0">${i+1}</span><span style="flex:1;font-size:13px">${escape(cat)}</span><span style="font-size:13px;font-weight:700;color:var(--red)">${fmtS(val)}</span></div>`).join('') || '<div style="color:var(--text3);font-size:13px">Sem dados</div>'}
     </div>
-    <div class="stats-grid">
+    <div class="sgrid">
       <div class="card card-sm">
-        <div class="card-title">🟢 Top Clientes</div>
-        ${topClients.map(([cid,val],i) => `<div class="rank-item"><div class="rank-num">${i+1}</div><div class="rank-info"><div class="rank-name" style="font-size:12px">${getContactName(cid)||'Desc.'}</div></div><div class="rank-val" style="font-size:13px">${fmtShort(val)}</div></div>`).join('') || '<div style="color:var(--text3);font-size:12px;">Sem dados</div>'}
+        <div class="ct">🟢 Clientes</div>
+        ${topCli.map(([cid,val],i)=>`<div class="si"><span style="color:var(--text3);width:16px;font-size:12px;flex-shrink:0">${i+1}</span><span style="flex:1;font-size:12px">${escape(getCtName(cid)||'?')}</span><span style="font-size:12px;font-weight:700;color:var(--green)">${fmtS(val)}</span></div>`).join('')||'<div style="color:var(--text3);font-size:12px">Sem dados</div>'}
       </div>
       <div class="card card-sm">
-        <div class="card-title">🔵 Top Fornecedores</div>
-        ${topSuppliers.map(([cid,val],i) => `<div class="rank-item"><div class="rank-num">${i+1}</div><div class="rank-info"><div class="rank-name" style="font-size:12px">${getContactName(cid)||'Desc.'}</div></div><div class="rank-val" style="font-size:13px;color:var(--red)">${fmtShort(val)}</div></div>`).join('') || '<div style="color:var(--text3);font-size:12px;">Sem dados</div>'}
+        <div class="ct">🔵 Fornecedores</div>
+        ${topSup.map(([cid,val],i)=>`<div class="si"><span style="color:var(--text3);width:16px;font-size:12px;flex-shrink:0">${i+1}</span><span style="flex:1;font-size:12px">${escape(getCtName(cid)||'?')}</span><span style="font-size:12px;font-weight:700;color:var(--red)">${fmtS(val)}</span></div>`).join('')||'<div style="color:var(--text3);font-size:12px">Sem dados</div>'}
       </div>
     </div>
 
-    <!-- MANAGE COMPANIES -->
-    <div class="section-title">Gestão das Empresas</div>
+    <div class="stitle">Gestão das Empresas</div>
     <div class="card card-sm">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-size:14px;font-weight:600;">${DB.holding.name}</div>
-        <button onclick="editHolding()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;">Editar</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:600">${escape(DB.holding.name)}</span>
+        <button onclick="editHolding()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer">Editar</button>
       </div>
       ${DB.companies.map(c => `
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);">
-          <div style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;"></div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:500;">${c.name}</div>
-            <div style="font-size:12px;color:var(--text3);">${c.segment} · ${c.cnpj}</div>
-          </div>
-          <button onclick="editCompany('${c.id}')" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;">Editar</button>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)">
+          <div style="width:10px;height:10px;border-radius:50%;background:${c.color}"></div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:500">${escape(c.name)}</div><div style="font-size:12px;color:var(--text3)">${escape(c.segment)} · ${escape(c.cnpj)}</div></div>
+          <button onclick="editCo('${c.id}')" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer">Editar</button>
         </div>
       `).join('')}
     </div>
   `;
-
-  // Charts — use rAF to ensure canvas has layout dimensions
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const cmpCtx = document.getElementById('chart-compare');
-    if (cmpCtx) {
-      if (charts['compare']) charts['compare'].destroy();
-      charts['compare'] = new Chart(cmpCtx, {
-        type: 'bar',
-        data: {
-          labels: companyStats.map(c => c.name.split(' ')[1] || c.name),
-          datasets: [
-            { label: 'Receita', data: companyStats.map(c => c.income), backgroundColor: 'rgba(45,212,160,0.7)' },
-            { label: 'Despesa', data: companyStats.map(c => c.expense), backgroundColor: 'rgba(247,100,90,0.7)' },
-          ]
-        }, options: {}
-      });
-    }
-    const donutCtx = document.getElementById('chart-donut');
-    if (donutCtx) {
-      if (charts['donut']) charts['donut'].destroy();
-      charts['donut'] = new Chart(donutCtx, {
-        type: 'doughnut',
-        data: { labels: companyStats.map(c => c.name), datasets: [{ data: companyStats.map(c => c.income), backgroundColor: companyStats.map(c => c.color) }] },
-        options: {}
-      });
-      const legendEl = document.getElementById('donut-legend');
-      if (legendEl) {
-        const total = companyStats.reduce((s,c) => s+c.income, 0);
-        legendEl.innerHTML = companyStats.map(c => `
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-            <div style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;"></div>
-            <div style="flex:1;font-size:13px;font-weight:500;">${c.name.split(' ')[1]||c.name}</div>
-            <div style="font-size:12px;color:var(--text3);">${total > 0 ? ((c.income/total)*100).toFixed(0) : 0}%</div>
-          </div>`).join('');
-      }
-    }
-  }));
 }
 
-// ============================================================
-// FINANCEIRO PAGE
-// ============================================================
-function renderFinanceiro() {
-  const container = document.getElementById('financeiro-content');
-  if (!container) return;
-  let txs;
-  const isConsolidated = currentCompany === 'consolidated';
+// ── FINANCEIRO PAGE ───────────────────────────────────────
+function renderFin() {
+  const el = document.getElementById('pg-financeiro');
+  const isCon = curCo === 'consolidated';
+  let txs = isCon ? DB.txs : DB.txs.filter(t => t.co === curCo);
+  txs = txs.filter(t => inPeriod(t, txPeriod));
+  if (txFilter !== 'all') txs = txs.filter(t => t.type === txFilter);
+  const realTxs = txs.filter(t => t.type !== 'transfer');
+  const s = stats(realTxs);
+  const sorted = [...txs].sort((a,b) => new Date(b.date)-new Date(a.date));
 
-  if (isConsolidated) {
-    txs = DB.transactions;
-  } else {
-    txs = getCompanyTxs(currentCompany);
-  }
-
-  let filtered = txs;
-  // period filter
-  filtered = filterByPeriod(filtered, txPeriod);
-  // type filter
-  if (txFilter !== 'all') filtered = filtered.filter(t => t.type === txFilter);
-
-  const realTxs = filtered.filter(t => t.type !== 'transfer');
-  const stats = calcStats(realTxs);
-
-  // Sort by date desc
-  filtered = [...filtered].sort((a,b) => new Date(b.date) - new Date(a.date));
-
-  const companyBadge = (cid) => {
-    if (!isConsolidated) return '';
-    const c = getCompany(cid);
-    if (!c) return '';
-    return `<span class="badge badge-company" style="background:${c.color}22;color:${c.color};">${c.name.split(' ')[1]||c.name}</span>`;
+  const coBadge = (coid) => {
+    if (!isCon) return '';
+    const c = getCo(coid);
+    return c ? `<span class="badge" style="background:${c.color}22;color:${c.color}">${escape(c.name.split(' ')[1]||c.name)}</span>` : '';
   };
 
-  container.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Receitas</div><div class="stat-value green">${fmtShort(stats.income)}</div></div>
-      <div class="stat-card"><div class="stat-label">Despesas</div><div class="stat-value red">${fmtShort(stats.expense)}</div></div>
-      <div class="stat-card"><div class="stat-label">Saldo</div><div class="stat-value ${stats.balance >= 0 ? 'green' : 'red'}">${fmtShort(stats.balance)}</div></div>
-      <div class="stat-card"><div class="stat-label">Transações</div><div class="stat-value blue">${filtered.length}</div></div>
+  el.innerHTML = `
+    <div class="sgrid">
+      <div class="sc"><div class="sl">Receitas</div><div class="sv g">${fmtS(s.inc)}</div></div>
+      <div class="sc"><div class="sl">Despesas</div><div class="sv r">${fmtS(s.exp)}</div></div>
+      <div class="sc"><div class="sl">Saldo</div><div class="sv ${s.bal>=0?'g':'r'}">${fmtS(s.bal)}</div></div>
+      <div class="sc"><div class="sl">Lançamentos</div><div class="sv b">${txs.length}</div></div>
     </div>
-
-    <div class="filter-row">
-      <div class="filter-chip ${txPeriod==='month'?'active':''}" onclick="setTxPeriod('month')">Este Mês</div>
-      <div class="filter-chip ${txPeriod==='quarter'?'active':''}" onclick="setTxPeriod('quarter')">Trimestre</div>
-      <div class="filter-chip ${txPeriod==='year'?'active':''}" onclick="setTxPeriod('year')">Ano</div>
-      <div class="filter-chip ${txPeriod==='all'?'active':''}" onclick="setTxPeriod('all')">Tudo</div>
+    <div class="frow">
+      ${['month','quarter','year','all'].map((p,i)=>`<div class="fc ${txPeriod===p?'on':''}" onclick="setTxPeriod('${p}')">${['Mês','Trimestre','Ano','Tudo'][i]}</div>`).join('')}
     </div>
-
-    <div class="filter-row">
-      <div class="filter-chip ${txFilter==='all'?'active':''}" onclick="setTxFilter('all')">Todos</div>
-      <div class="filter-chip ${txFilter==='in'?'active':''}" onclick="setTxFilter('in')">Entradas</div>
-      <div class="filter-chip ${txFilter==='out'?'active':''}" onclick="setTxFilter('out')">Saídas</div>
-      <div class="filter-chip ${txFilter==='transfer'?'active':''}" onclick="setTxFilter('transfer')">Transferências</div>
+    <div class="frow">
+      ${['all','in','out','transfer'].map((f,i)=>`<div class="fc ${txFilter===f?'on':''}" onclick="setTxFilt('${f}')">${['Todos','Entradas','Saídas','Transf.'][i]}</div>`).join('')}
     </div>
-
-    <div class="tx-list">
-      ${filtered.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">💸</div><div class="empty-state-title">Nenhum lançamento</div><div class="empty-state-sub">Toque no + para adicionar</div></div>` :
-        filtered.map(t => {
-          const iconMap = { in: '↑', out: '↓', transfer: '⇄' };
-          const cn = getContactName(t.contact);
-          return `<div class="tx-item" onclick="openTxDetail('${t.id}')">
-            <div class="tx-icon ${t.type}">${iconMap[t.type]}</div>
-            <div class="tx-info">
-              <div class="tx-desc">${t.desc}</div>
-              <div class="tx-meta">${fmtDate(t.date)}${cn ? ' · ' + cn : ''}${t.category ? ' · ' + t.category : ''}</div>
+    <div class="txlist">
+      ${sorted.length === 0 ? `<div class="empty"><div>💸</div><div>Nenhum lançamento</div><div style="font-size:13px;margin-top:4px">Toque + para adicionar</div></div>` :
+        sorted.map(t => `
+          <div class="txi" onclick="openTxDetail('${t.id}')">
+            <div class="tico ${t.type==='transfer'?'tr':t.type}">${t.type==='in'?'↑':t.type==='out'?'↓':'⇄'}</div>
+            <div class="tiinfo">
+              <div class="tidesc">${escape(t.desc)}</div>
+              <div class="timeta">${fmtD(t.date)}${t.ctid?' · '+escape(getCtName(t.ctid)):''}${t.cat?' · '+escape(t.cat):''}</div>
             </div>
-            <div class="tx-right">
-              <div class="tx-amount ${t.type}">${t.type === 'in' ? '+' : t.type === 'transfer' ? '' : '-'}${fmt(t.amount)}</div>
-              <div class="tx-badges">
-                ${companyBadge(t.company)}
-                <span class="badge ${t.status === 'paid' ? 'badge-paid' : 'badge-pending'}">${t.status === 'paid' ? 'Pago' : 'Pendente'}</span>
-                ${t.doc ? '<span class="badge badge-doc">📎</span>' : ''}
+            <div class="tiright">
+              <div class="tiamt ${t.type==='transfer'?'tr':t.type}">${t.type==='in'?'+':t.type==='out'?'-':''}${fmt(t.amt)}</div>
+              <div class="badges">
+                ${coBadge(t.co)}
+                <span class="badge ${t.status==='paid'?'bpaid':'bpend'}">${t.status==='paid'?'Pago':'Pendente'}</span>
+                ${t.doc?'<span class="badge bdoc">📎</span>':''}
               </div>
             </div>
-          </div>`;
-        }).join('')}
-    </div>
-  `;
-}
-
-function setTxFilter(f) { txFilter = f; renderFinanceiro(); }
-function setTxPeriod(p) { txPeriod = p; renderFinanceiro(); }
-
-// ============================================================
-// CONTATOS PAGE
-// ============================================================
-function renderContatos() {
-  const container = document.getElementById('contatos-content');
-  if (!container) return;
-  const types = ['all','Cliente','Fornecedor','Funcionário','Parceiro'];
-
-  let contacts;
-  if (contactTab === 'global') {
-    contacts = DB.globalContacts;
-  } else {
-    const cid = currentCompany === 'consolidated' ? null : currentCompany;
-    if (cid) {
-      contacts = DB.companyContacts[cid] || [];
-    } else {
-      contacts = Object.values(DB.companyContacts).flat();
-    }
-  }
-
-  if (contactFilter !== 'all') contacts = contacts.filter(c => c.type === contactFilter);
-
-  const typeIcon = { Cliente: '💼', Fornecedor: '📦', Funcionário: '👤', Parceiro: '🤝' };
-
-  container.innerHTML = `
-    <input class="search-input" id="contact-search" placeholder="Buscar contato..." oninput="filterContactSearch(this.value)">
-
-    <div class="inner-tabs">
-      <button class="inner-tab ${contactTab==='global'?'active':''}" onclick="setContactTab('global')">Globais do Grupo</button>
-      <button class="inner-tab ${contactTab==='company'?'active':''}" onclick="setContactTab('company')">${currentCompany !== 'consolidated' ? getCompany(currentCompany)?.name || 'Empresa' : 'Por Empresa'}</button>
-    </div>
-
-    <div class="filter-row">
-      ${types.map(t => `<div class="filter-chip ${contactFilter===t?'active':''}" onclick="setContactFilter('${t}')">${t==='all'?'Todos':t}</div>`).join('')}
-    </div>
-
-    <div id="contacts-list">
-      ${contacts.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">Nenhum contato</div></div>` :
-        contacts.map(c => `
-          <div class="contact-item" onclick="openContactDetail('${c.id}')">
-            <div class="contact-avatar">${initials(c.name)}</div>
-            <div class="contact-info">
-              <div class="contact-name">${c.name}</div>
-              <div class="contact-meta">${c.type}${c.cnpj ? ' · ' + c.cnpj : ''}${c.phone ? ' · ' + c.phone : ''}</div>
-              <div class="contact-badges">
-                ${contactTab === 'global' ? '<span class="badge" style="background:rgba(79,142,247,0.15);color:var(--accent)">GLOBAL</span>' : ''}
-              </div>
-            </div>
-            <div style="color:var(--text3);font-size:20px;">›</div>
           </div>
         `).join('')}
     </div>
-
-    <button class="btn btn-primary" style="margin-top:16px;" onclick="openNewContact()">+ Novo Contato</button>
   `;
 }
+function setTxFilt(f) { txFilter = f; renderFin(); }
+function setTxPeriod(p) { txPeriod = p; renderFin(); }
 
-function setContactTab(t) { contactTab = t; renderContatos(); }
-function setContactFilter(f) { contactFilter = f; renderContatos(); }
-function filterContactSearch(val) {
-  const items = document.querySelectorAll('.contact-item');
-  items.forEach(item => {
-    item.style.display = item.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+// ── CONTATOS PAGE ─────────────────────────────────────────
+function renderCts() {
+  const el = document.getElementById('pg-contatos');
+  const cid = curCo !== 'consolidated' ? curCo : null;
+  let cts = ctTab === 'global' ? DB.globalContacts : (cid ? DB.companyCts[cid]||[] : Object.values(DB.companyCts).flat());
+  if (ctFilter !== 'all') cts = cts.filter(c => c.type === ctFilter);
+  const tLbl = cid ? getCo(cid)?.name || 'Empresa' : 'Por Empresa';
+
+  el.innerHTML = `
+    <input class="srch" id="srch" placeholder="Buscar contato..." oninput="srchCt(this.value)">
+    <div class="itabs">
+      <button class="itab ${ctTab==='global'?'on':''}" onclick="setCtTab('global')">Globais do Grupo</button>
+      <button class="itab ${ctTab==='company'?'on':''}" onclick="setCtTab('company')">${escape(tLbl)}</button>
+    </div>
+    <div class="frow">
+      ${['all','Cliente','Fornecedor','Funcionário','Parceiro'].map(t=>`<div class="fc ${ctFilter===t?'on':''}" onclick="setCtFilt('${t}')">${t==='all'?'Todos':t}</div>`).join('')}
+    </div>
+    <div id="ctlist">
+      ${cts.length===0?`<div class="empty"><div>👥</div><div>Nenhum contato</div></div>`:
+        cts.map(c=>`
+          <div class="ci" onclick="openCtDetail('${c.id}')">
+            <div class="cav">${initials(c.name)}</div>
+            <div class="ciinfo">
+              <div class="cin">${escape(c.name)}</div>
+              <div class="cim">${escape(c.type)}${c.phone?' · '+escape(c.phone):''}</div>
+            </div>
+            ${ctTab==='global'?'<span class="badge bdoc">GLOBAL</span>':''}
+            <span style="color:var(--text3);font-size:20px">›</span>
+          </div>
+        `).join('')}
+    </div>
+    <button class="btn bprim" style="margin-top:16px" onclick="openCtModal()">+ Novo Contato</button>
+  `;
+}
+function setCtTab(t) { ctTab = t; renderCts(); }
+function setCtFilt(f) { ctFilter = f; renderCts(); }
+function srchCt(v) {
+  document.querySelectorAll('.ci').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(v.toLowerCase()) ? '' : 'none';
   });
 }
 
-// ============================================================
-// DOCUMENTOS PAGE
-// ============================================================
-function renderDocumentos() {
-  const container = document.getElementById('documentos-content');
-  if (!container) return;
-  let txs = currentCompany === 'consolidated' ? DB.transactions : getCompanyTxs(currentCompany);
+// ── DOCUMENTOS PAGE ───────────────────────────────────────
+function renderDocs() {
+  const el = document.getElementById('pg-documentos');
+  let txs = curCo === 'consolidated' ? DB.txs : DB.txs.filter(t => t.co === curCo);
   const withDoc = txs.filter(t => t.doc);
-  const total = txs.length;
-  const pct = total > 0 ? Math.round((withDoc.length/total)*100) : 0;
+  const pct = txs.length > 0 ? Math.round(withDoc.length/txs.length*100) : 0;
 
-  container.innerHTML = `
-    <div class="doc-coverage">
-      <div style="font-size:28px;">📁</div>
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Cobertura de Documentos</div>
-        <div class="doc-coverage-bar"><div class="doc-coverage-fill" style="width:${pct}%"></div></div>
-        <div style="font-size:12px;color:var(--text3);margin-top:4px;">${withDoc.length} de ${total} transações (${pct}%)</div>
+  el.innerHTML = `
+    <div class="dccov">
+      <div style="font-size:28px">📁</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Cobertura de Documentos</div>
+        <div class="dcbar"><div class="dcfill" style="width:${pct}%"></div></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px">${withDoc.length} de ${txs.length} transações (${pct}%)</div>
       </div>
     </div>
-
-    <div class="filter-row">
-      <div class="filter-chip active" id="doc-filter-all" onclick="setDocFilter('all',this)">Todos com Docs</div>
-      <div class="filter-chip" id="doc-filter-in" onclick="setDocFilter('in',this)">Entradas</div>
-      <div class="filter-chip" id="doc-filter-out" onclick="setDocFilter('out',this)">Saídas</div>
-      <div class="filter-chip" id="doc-filter-missing" onclick="setDocFilter('missing',this)">Sem Documento</div>
+    <div class="frow">
+      <div class="fc on" onclick="setDocFilt('all',this)">Com Documento</div>
+      <div class="fc" onclick="setDocFilt('in',this)">Entradas</div>
+      <div class="fc" onclick="setDocFilt('out',this)">Saídas</div>
+      <div class="fc" onclick="setDocFilt('missing',this)">Sem Documento</div>
     </div>
-
-    <div id="docs-list">
-      ${renderDocList(withDoc)}
-    </div>
+    <div id="doclist">${renderDocList(withDoc)}</div>
   `;
 }
-
 function renderDocList(txs) {
-  if (txs.length === 0) return `<div class="empty-state"><div class="empty-state-icon">📄</div><div class="empty-state-title">Nenhum documento</div></div>`;
-  const docIcon = t => t.type === 'in' ? '🟢' : t.type === 'out' ? '🔴' : '🔵';
+  if (!txs.length) return '<div class="empty"><div>📄</div><div>Nenhum documento</div></div>';
   return txs.map(t => `
-    <div class="doc-card" onclick="${t.doc ? `window.open('${t.doc}','_blank')` : `openTxDetail('${t.id}')`}">
-      <div class="doc-icon">${docIcon(t)}</div>
-      <div class="doc-info">
-        <div class="doc-name">${t.desc}</div>
-        <div class="doc-meta">${fmtDate(t.date)} · ${fmt(t.amount)} ${t.doc ? '· 🔗 Abrir documento' : '· Sem documento'}</div>
+    <div class="ci" onclick="${t.doc?`window.open('${t.doc}','_blank')`:`openTxDetail('${t.id}')`}" style="margin-bottom:8px">
+      <div style="font-size:22px;flex-shrink:0">${t.type==='in'?'🟢':'🔴'}</div>
+      <div class="ciinfo">
+        <div class="cin">${escape(t.desc)}</div>
+        <div class="cim">${fmtD(t.date)} · ${fmt(t.amt)} ${t.doc?'· 🔗 Abrir':'· Sem doc'}</div>
       </div>
-      <div style="color:var(--text3);">›</div>
+      <span style="color:var(--text3);font-size:20px">›</span>
     </div>
   `).join('');
 }
-
-function setDocFilter(f, btn) {
-  document.querySelectorAll('#page-documentos .filter-chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  let txs = currentCompany === 'consolidated' ? DB.transactions : getCompanyTxs(currentCompany);
+function setDocFilt(f, btn) {
+  document.querySelectorAll('#pg-documentos .fc').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  let txs = curCo === 'consolidated' ? DB.txs : DB.txs.filter(t => t.co === curCo);
   if (f === 'missing') txs = txs.filter(t => !t.doc);
   else { txs = txs.filter(t => t.doc); if (f !== 'all') txs = txs.filter(t => t.type === f); }
-  document.getElementById('docs-list').innerHTML = renderDocList(txs);
+  document.getElementById('doclist').innerHTML = renderDocList(txs);
 }
 
-// ============================================================
-// RELATORIOS PAGE
-// ============================================================
-function renderRelatorios() {
-  const container = document.getElementById('relatorios-content');
-  if (!container) return;
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const fullMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+// ── RELATORIOS PAGE ───────────────────────────────────────
+function renderRep() {
+  const el = document.getElementById('pg-relatorios');
+  const mNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mFull = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-  let txs;
-  const rp = reportPeriod;
-
-  const inPeriod = (t) => {
-    const d = new Date(t.date);
-    return d.getMonth() === rp.month && d.getFullYear() === rp.year;
-  };
-
-  if (reportCompany === 'consolidated') {
-    txs = DB.transactions.filter(inPeriod);
-  } else {
-    txs = getCompanyTxs(reportCompany).filter(inPeriod);
-  }
-
+  let txs = repCo === 'consolidated' ? DB.txs : DB.txs.filter(t => t.co === repCo);
+  txs = txs.filter(t => { const d = new Date(t.date); return d.getMonth()===repMonth && d.getFullYear()===repYear; });
   const realTxs = txs.filter(t => t.type !== 'transfer');
-  const stats = calcStats(realTxs);
+  const s = stats(realTxs);
   const transfers = txs.filter(t => t.type === 'transfer');
 
-  // Category breakdown
-  const catIn = {}, catOut = {};
-  realTxs.forEach(t => {
-    if (t.type === 'in') catIn[t.category] = (catIn[t.category]||0) + t.amount;
-    else catOut[t.category] = (catOut[t.category]||0) + t.amount;
-  });
+  const catOut = {};
+  realTxs.filter(t=>t.type==='out').forEach(t => { catOut[t.cat] = (catOut[t.cat]||0) + t.amt; });
+  const topCats = Object.entries(catOut).sort((a,b)=>b[1]-a[1]);
 
-  container.innerHTML = `
+  el.innerHTML = `
     <div class="card">
-      <div class="form-row" style="margin-bottom:12px;">
-        <select class="form-select" onchange="setReportCompany(this.value)">
-          <option value="consolidated" ${reportCompany==='consolidated'?'selected':''}>Grupo Consolidado</option>
-          ${DB.companies.map(c => `<option value="${c.id}" ${reportCompany===c.id?'selected':''}>${c.name}</option>`).join('')}
-        </select>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <button class="period-nav" onclick="changeReportMonth(-1)">‹</button>
-          <select class="form-select" style="flex:1;" onchange="setReportMonth(this.value)">
-            ${months.map((m,i) => `<option value="${i}" ${rp.month===i?'selected':''}>${m} ${rp.year}</option>`).join('')}
+      <div class="frow2">
+        <div class="fg">
+          <label class="fl">Empresa</label>
+          <select class="fs" onchange="repCo=this.value;renderRep()">
+            <option value="consolidated" ${repCo==='consolidated'?'selected':''}>Grupo Consolidado</option>
+            ${DB.companies.map(c=>`<option value="${c.id}" ${repCo===c.id?'selected':''}>${escape(c.name)}</option>`).join('')}
           </select>
-          <button class="period-nav" onclick="changeReportMonth(1)">›</button>
+        </div>
+        <div class="fg">
+          <label class="fl">Período</label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button onclick="chRepM(-1)" style="background:var(--bg3);border:1px solid var(--border2);color:#e8eaf0;border-radius:6px;padding:8px 10px;cursor:pointer;font-size:14px">‹</button>
+            <select class="fs" style="flex:1" onchange="repMonth=+this.value;renderRep()">
+              ${mNames.map((m,i)=>`<option value="${i}" ${repMonth===i?'selected':''}>${m} ${repYear}</option>`).join('')}
+            </select>
+            <button onclick="chRepM(1)" style="background:var(--bg3);border:1px solid var(--border2);color:#e8eaf0;border-radius:6px;padding:8px 10px;cursor:pointer;font-size:14px">›</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- DRE -->
     <div class="card">
-      <div class="card-title">DRE Simplificado — ${fullMonths[rp.month]} ${rp.year}</div>
-      <div class="report-stat-row"><span>Receita Bruta</span><span style="color:var(--green)">${fmt(stats.income)}</span></div>
-      <div class="report-stat-row"><span>(-) Despesas Totais</span><span style="color:var(--red)">(${fmt(stats.expense)})</span></div>
-      <div class="report-stat-row total"><span>Resultado Líquido</span><span style="color:${stats.balance>=0?'var(--green)':'var(--red)'};">${stats.balance >= 0 ? '+' : ''}${fmt(stats.balance)}</span></div>
-      ${transfers.length > 0 ? `<div class="report-stat-row"><span style="color:var(--text3)">Transferências Internas</span><span style="color:var(--accent)">${transfers.length} transações</span></div>` : ''}
+      <div class="ct">DRE — ${mFull[repMonth]} ${repYear}</div>
+      <div class="rrow"><span>Receita Bruta</span><span style="color:var(--green);font-weight:600">${fmt(s.inc)}</span></div>
+      <div class="rrow"><span>(-) Despesas</span><span style="color:var(--red)">(${fmt(s.exp)})</span></div>
+      ${transfers.length?`<div class="rrow"><span style="color:var(--text3)">Transferências Internas</span><span style="color:var(--accent)">${transfers.length} transações</span></div>`:''}
+      <div class="rrow tot"><span>Resultado Líquido</span><span style="color:${s.bal>=0?'var(--green)':'var(--red)'}">${s.bal>=0?'+':''}${fmt(s.bal)}</span></div>
     </div>
 
-    <!-- CATEGORY BREAKDOWN -->
+    ${topCats.length?`
     <div class="card">
-      <div class="card-title">Despesas por Categoria</div>
-      <div class="chart-wrap-sm"><canvas id="chart-cat"></canvas></div>
-    </div>
-
-    <!-- TRANSACTION TABLE -->
-    <div class="card">
-      <div class="card-title">Extrato Completo (${realTxs.length} transações)</div>
-      ${[...realTxs].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t => `
-        <div class="report-stat-row" style="font-size:13px;">
-          <div>
-            <div style="font-weight:500;">${t.desc}</div>
-            <div style="color:var(--text3);font-size:11px;">${fmtDate(t.date)} · ${t.category}</div>
+      <div class="ct">Despesas por Categoria</div>
+      ${topCats.map(([cat,val])=>`
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>${escape(cat)}</span><span style="color:var(--red);font-weight:600">${fmt(val)}</span></div>
+          <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${s.exp>0?(val/s.exp*100).toFixed(0)+'%':'0'};background:var(--red);opacity:.7;border-radius:3px"></div>
           </div>
-          <span style="color:${t.type==='in'?'var(--green)':'var(--red)'};font-family:'DM Mono',monospace;font-weight:600;">${t.type==='in'?'+':'-'}${fmt(t.amount)}</span>
         </div>
       `).join('')}
-    </div>
-
-    <button class="btn btn-primary" onclick="exportPDF()">📄 Exportar PDF</button>
-    <div style="height:8px;"></div>
-  `;
-
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const catCtx = document.getElementById('chart-cat');
-    if (catCtx && Object.keys(catOut).length > 0) {
-      if (charts['cat']) charts['cat'].destroy();
-      charts['cat'] = new Chart(catCtx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(catOut),
-          datasets: [{ data: Object.values(catOut), backgroundColor: 'rgba(247,100,90,0.7)' }]
-        },
-        options: { indexAxis: 'y' }
-      });
+    </div>`:''
     }
-  }));
-}
 
-function setReportCompany(v) { reportCompany = v; renderRelatorios(); }
-function setReportMonth(v) { reportPeriod.month = parseInt(v); renderRelatorios(); }
-function changeReportMonth(dir) {
-  reportPeriod.month += dir;
-  if (reportPeriod.month < 0) { reportPeriod.month = 11; reportPeriod.year--; }
-  if (reportPeriod.month > 11) { reportPeriod.month = 0; reportPeriod.year++; }
-  renderRelatorios();
-}
+    <div class="card">
+      <div class="ct">Extrato (${realTxs.length} lançamentos)</div>
+      ${[...realTxs].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t=>`
+        <div class="rrow" style="font-size:13px">
+          <div><div style="font-weight:500">${escape(t.desc)}</div><div style="color:var(--text3);font-size:11px">${fmtD(t.date)} · ${escape(t.cat)}</div></div>
+          <span style="color:${t.type==='in'?'var(--green)':'var(--red)'};font-family:monospace;font-weight:600">${t.type==='in'?'+':'-'}${fmt(t.amt)}</span>
+        </div>
+      `).join('') || '<div style="color:var(--text3);text-align:center;padding:16px">Nenhum lançamento</div>'}
+    </div>
 
+    <button class="btn bprim" onclick="exportPDF()">📄 Exportar / Imprimir PDF</button>
+    <div style="height:8px"></div>
+  `;
+}
+function chRepM(d) {
+  repMonth += d;
+  if (repMonth < 0) { repMonth = 11; repYear--; }
+  if (repMonth > 11) { repMonth = 0; repYear++; }
+  renderRep();
+}
 function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const mFull = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  let txs = repCo === 'consolidated' ? DB.txs : DB.txs.filter(t => t.co === repCo);
+  txs = txs.filter(t => { const d = new Date(t.date); return d.getMonth()===repMonth && d.getFullYear()===repYear && t.type!=='transfer'; });
+  const s = stats(txs);
+  const coName = repCo === 'consolidated' ? 'Grupo Consolidado' : (getCo(repCo)?.name||'');
 
-  // Header
-  doc.setFillColor(10, 11, 15);
-  doc.rect(0, 0, 210, 40, 'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(22); doc.setFont('helvetica','bold');
-  doc.text('HoldingCRM', 15, 18);
-  doc.setFontSize(11); doc.setFont('helvetica','normal');
-  doc.text(`Relatório ${months[reportPeriod.month]} ${reportPeriod.year}`, 15, 28);
-  doc.text(reportCompany === 'consolidated' ? 'Grupo Consolidado' : getCompany(reportCompany)?.name || '', 15, 35);
+  const rows = [...txs].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t =>
+    `<tr><td>${fmtD(t.date)}</td><td>${escape(t.desc)}</td><td>${escape(t.cat)}</td><td style="color:${t.type==='in'?'#16a34a':'#dc2626'}">${t.type==='in'?'+':'-'}${fmt(t.amt)}</td><td>${t.status==='paid'?'Pago':'Pendente'}</td></tr>`
+  ).join('');
 
-  // Stats
-  let y = 50;
-  doc.setTextColor(0,0,0);
-  doc.setFontSize(14); doc.setFont('helvetica','bold');
-  doc.text('DRE Simplificado', 15, y); y += 8;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório ${mFull[repMonth]} ${repYear}</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;color:#000}h1{font-size:22px}h2{font-size:15px;margin:20px 0 8px;color:#333}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#4f8ef7;color:white;padding:6px;text-align:left}td{padding:5px 6px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f5f7fa}.hdr{background:#0a0b0f;color:white;padding:16px;margin:-20px -20px 20px;border-radius:0}.stat{display:inline-block;margin-right:20px;margin-bottom:8px}.sv{font-size:18px;font-weight:bold}.sl{font-size:11px;color:#aaa;text-transform:uppercase}.g{color:#16a34a}.r{color:#dc2626}.footer{color:#999;font-size:10px;text-align:center;margin-top:24px}@media print{.noprint{display:none}}</style>
 
-  let txs = reportCompany === 'consolidated' ? DB.transactions : getCompanyTxs(reportCompany);
-  txs = txs.filter(t => { const d = new Date(t.date); return d.getMonth()===reportPeriod.month && d.getFullYear()===reportPeriod.year && t.type!=='transfer'; });
-  const stats = calcStats(txs);
+  </head><body>
+  <div class="hdr"><h1>HoldingCRM — Relatório Financeiro</h1><p style="color:#aaa;margin:4px 0">${mFull[repMonth]} ${repYear} · ${escape(coName)}</p></div>
+  <h2>Resumo Executivo</h2>
+  <div class="stat"><div class="sl">Receita</div><div class="sv g">${fmt(s.inc)}</div></div>
+  <div class="stat"><div class="sl">Despesas</div><div class="sv r">${fmt(s.exp)}</div></div>
+  <div class="stat"><div class="sl">Resultado</div><div class="sv ${s.bal>=0?'g':'r'}">${s.bal>=0?'+':''}${fmt(s.bal)}</div></div>
+  <h2>Extrato de Transações</h2>
+  <table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="footer">Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')} · HoldingCRM</div>
+  <script>window.onload=function(){window.print()}<\/script></body></html>`;
 
-  doc.autoTable({
-    startY: y,
-    head: [['Item','Valor']],
-    body: [
-      ['Receita Bruta', `R$ ${stats.income.toLocaleString('pt-BR',{minimumFractionDigits:2})}`],
-      ['(-) Despesas', `R$ ${stats.expense.toLocaleString('pt-BR',{minimumFractionDigits:2})}`],
-      ['Resultado Líquido', `R$ ${stats.balance.toLocaleString('pt-BR',{minimumFractionDigits:2})}`],
-    ],
-    theme: 'striped',
-    headStyles: { fillColor: [79,142,247] },
-    margin: { left: 15, right: 15 },
-  });
-
-  y = doc.lastAutoTable.finalY + 10;
-  doc.setFontSize(14); doc.setFont('helvetica','bold');
-  doc.text('Extrato de Transações', 15, y); y += 4;
-
-  doc.autoTable({
-    startY: y,
-    head: [['Data','Descrição','Categoria','Tipo','Valor','Status']],
-    body: txs.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t => [
-      fmtDate(t.date), t.desc, t.category,
-      t.type === 'in' ? 'Entrada' : 'Saída',
-      `R$ ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`,
-      t.status === 'paid' ? 'Pago' : 'Pendente'
-    ]),
-    theme: 'striped',
-    headStyles: { fillColor: [79,142,247] },
-    margin: { left: 15, right: 15 },
-    columnStyles: { 4: { halign: 'right' } }
-  });
-
-  // Footer
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(9); doc.setTextColor(150,150,150);
-    doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')} · Página ${i}/${pageCount}`, 105, 290, { align: 'center' });
-  }
-
-  doc.save(`relatorio-${months[reportPeriod.month].toLowerCase()}-${reportPeriod.year}.pdf`);
+const w = window.open(’’,’_blank’);
+if (w) { w.document.write(html); w.document.close(); }
+else alert(‘Permita pop-ups para gerar o PDF. Ou use Compartilhar → Imprimir no Safari.’);
 }
 
-// ============================================================
-// MODALS SYSTEM
-// ============================================================
-function showModal(html, id='main-modal') {
-  const modals = document.getElementById('modals');
-  const existing = document.getElementById(id);
-  if (existing) existing.remove();
-  const div = document.createElement('div');
-  div.className = 'modal-overlay';
-  div.id = id;
-  div.innerHTML = `<div class="modal" style="position:relative;">${html}</div>`;
-  div.addEventListener('click', (e) => { if (e.target === div) closeModal(id); });
-  modals.appendChild(div);
-  setTimeout(() => div.classList.add('open'), 10);
+// ── MODAL SYSTEM ──────────────────────────────────────────
+function showModal(html) {
+const d = document.getElementById(‘modals’);
+const div = document.createElement(‘div’);
+div.className = ‘mo’;
+div.id = ‘modal’;
+div.innerHTML = `<div class="mb">${html}</div>`;
+div.addEventListener(‘click’, e => { if (e.target === div) closeModal(); });
+d.appendChild(div);
+requestAnimationFrame(() => div.classList.add(‘open’));
+}
+function closeModal() {
+const m = document.getElementById(‘modal’);
+if (!m) return;
+m.classList.remove(‘open’);
+setTimeout(() => m.remove(), 300);
 }
 
-function closeModal(id='main-modal') {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove('open');
-  setTimeout(() => el.remove(), 300);
+// ── TRANSACTION MODAL ─────────────────────────────────────
+function openTxModal(prefill) {
+prefill = prefill || {};
+const cid = curCo !== ‘consolidated’ ? curCo : (DB.companies[0]?.id || ‘’);
+const cats = cid ? getCats(cid) : DB.globalCats;
+const cts = cid ? getAllCts(cid) : DB.globalContacts;
+const t = prefill.type || ‘in’;
+
+showModal(` <div class="mh"></div> <div class="mt">${prefill.id?'Editar':'Novo'} Lançamento</div> <div class="ttog"> <button class="tb ${t==='in'?'ain':''}" onclick="setTT(this,'in')">↑ Entrada</button> <button class="tb ${t==='out'?'aout':''}" onclick="setTT(this,'out')">↓ Saída</button> <button class="tb ${t==='transfer'?'atr':''}" onclick="setTT(this,'transfer')">⇄ Transf.</button> </div> <input type="hidden" id="tt" value="${t}"> <div class="fg"><label class="fl">Empresa</label> <select class="fs" id="tco" onchange="updTxCo(this.value)"> ${DB.companies.map(c=>`<option value=”${c.id}” ${(prefill.co||cid)===c.id?‘selected’:’’}>${escape(c.name)}</option>`).join('')} </select> </div> <div class="frow2"> <div class="fg"><label class="fl">Data</label><input type="date" class="fi" id="tdate" value="${prefill.date||new Date().toISOString().split('T')[0]}"></div> <div class="fg"><label class="fl">Valor R$</label><input type="number" class="fi" id="tamt" placeholder="0.00" value="${prefill.amt||''}"></div> </div> <div class="fg"><label class="fl">Descrição</label><input type="text" class="fi" id="tdesc" placeholder="Ex: Nota Fiscal #123" value="${escape(prefill.desc||'')}"></div> <div class="fg"><label class="fl">Categoria</label> <select class="fs" id="tcat">${cats.map(c=>`<option ${prefill.cat===c?‘selected’:’’}>${escape(c)}</option>`).join('')}</select> </div> <div class="fg" id="tto-grp" style="display:${t==='transfer'?'block':'none'}"><label class="fl">Empresa Destino</label> <select class="fs" id="tto">${DB.companies.map(c=>`<option value=”${c.id}” ${prefill.toId===c.id?‘selected’:’’}>${escape(c.name)}</option>`).join('')}</select> </div> <div class="fg"><label class="fl">Contato</label> <select class="fs" id="tctid"> <option value="">Nenhum</option> <optgroup label="Globais">${DB.globalContacts.map(c=>`<option value=”${c.id}” ${prefill.ctid===c.id?‘selected’:’’}>${escape(c.name)}</option>`).join('')}</optgroup> <optgroup label="Da Empresa" id="tct-co">${(cid?DB.companyCts[cid]||[]:[]).map(c=>`<option value=”${c.id}” ${prefill.ctid===c.id?‘selected’:’’}>${escape(c.name)}</option>`).join('')}</optgroup> </select> </div> <div class="fg"><label class="fl">Status</label> <select class="fs" id="tstat"> <option value="paid" ${prefill.status!=='pending'?'selected':''}>Pago</option> <option value="pending" ${prefill.status==='pending'?'selected':''}>Pendente</option> </select> </div> <div class="fg"><label class="fl">Link Documento (OneDrive/Drive)</label><input type="url" class="fi" id="tdoc" placeholder="https://..." value="${escape(prefill.doc||'')}"></div> <div class="brow"> ${prefill.id?`<button class="btn bdng" onclick="delTx('${prefill.id}')">Excluir</button>`:'<button class="btn bsec" onclick="closeModal()">Cancelar</button>'} <button class="btn bprim" onclick="saveTx(${prefill.id?`’${prefill.id}’`:'null'})">Salvar</button> </div> `);
 }
-
-// ============================================================
-// NEW TRANSACTION MODAL
-// ============================================================
-function openNewTransaction(prefill={}) {
-  const cid = currentCompany === 'consolidated' ? DB.companies[0]?.id : currentCompany;
-  const cats = cid ? getCategories(cid) : DB.globalCategories;
-  const contacts = cid ? getAllContacts(cid) : DB.globalContacts;
-
-  const html = `
-    <div class="modal-handle"></div>
-    <div class="modal-title">${prefill.id ? 'Editar' : 'Novo'} Lançamento</div>
-
-    <div class="type-toggle">
-      <button class="type-btn ${(!prefill.type||prefill.type==='in')?'active-in':''}" onclick="setTxTypeBtn(this,'in')">↑ Entrada</button>
-      <button class="type-btn ${prefill.type==='out'?'active-out':''}" onclick="setTxTypeBtn(this,'out')">↓ Saída</button>
-      <button class="type-btn ${prefill.type==='transfer'?'active-transfer':''}" onclick="setTxTypeBtn(this,'transfer')">⇄ Transfer.</button>
-    </div>
-    <input type="hidden" id="tx-type" value="${prefill.type||'in'}">
-
-    <div class="form-group">
-      <label class="form-label">Empresa</label>
-      <select class="form-select" id="tx-company" onchange="updateTxCompanyOptions(this.value)">
-        ${DB.companies.map(c => `<option value="${c.id}" ${(prefill.company||cid)===c.id?'selected':''}>${c.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="tx-date" value="${prefill.date||new Date().toISOString().split('T')[0]}"></div>
-      <div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" class="form-input" id="tx-amount" placeholder="0,00" value="${prefill.amount||''}"></div>
-    </div>
-    <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="tx-desc" placeholder="Ex: Nota Fiscal #123" value="${prefill.desc||''}"></div>
-
-    <div id="tx-category-group" class="form-group">
-      <label class="form-label">Categoria</label>
-      <select class="form-select" id="tx-category">
-        ${cats.map(c => `<option ${prefill.category===c?'selected':''}>${c}</option>`).join('')}
-      </select>
-    </div>
-
-    <div id="tx-transfer-to-group" class="form-group" style="display:${prefill.type==='transfer'?'block':'none'}">
-      <label class="form-label">Empresa Destino</label>
-      <select class="form-select" id="tx-transfer-to">
-        ${DB.companies.map(c => `<option value="${c.id}" ${prefill.transferTo===c.id?'selected':''}>${c.name}</option>`).join('')}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Contato Vinculado</label>
-      <select class="form-select" id="tx-contact">
-        <option value="">Nenhum</option>
-        <optgroup label="Globais do Grupo">
-          ${DB.globalContacts.map(c => `<option value="${c.id}" ${prefill.contact===c.id?'selected':''}>${c.name} (${c.type})</option>`).join('')}
-        </optgroup>
-        <optgroup label="Da Empresa" id="tx-contact-company">
-          ${(cid ? DB.companyContacts[cid]||[] : []).map(c => `<option value="${c.id}" ${prefill.contact===c.id?'selected':''}>${c.name} (${c.type})</option>`).join('')}
-        </optgroup>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="tx-status">
-          <option value="paid" ${prefill.status!=='pending'?'selected':''}>Pago</option>
-          <option value="pending" ${prefill.status==='pending'?'selected':''}>Pendente</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Recorrência</label>
-        <select class="form-select" id="tx-recur">
-          <option value="once">Único</option>
-          <option value="monthly">Mensal</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group"><label class="form-label">Link Documento (OneDrive/Drive)</label><input type="url" class="form-input" id="tx-doc" placeholder="https://..." value="${prefill.doc||''}"></div>
-    <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="tx-notes" placeholder="Anotações...">${prefill.notes||''}</textarea></div>
-
-```
-<div class="btn-row">
-  ${prefill.id ? `<button class="btn btn-danger" onclick="deleteTx('${prefill.id}')">Excluir</button>` : '<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>'}
-  <button class="btn btn-primary" onclick="saveTx(${prefill.id?`'${prefill.id}'`:'null'})">Salvar</button>
-</div>
-```
-
-`;
-showModal(html);
-}
-
-function setTxTypeBtn(btn, type) {
-document.querySelectorAll(’.type-btn’).forEach(b => b.className = ‘type-btn’);
-btn.classList.add(`active-${type}`);
-document.getElementById(‘tx-type’).value = type;
-const tg = document.getElementById(‘tx-transfer-to-group’);
+function setTT(btn, type) {
+document.querySelectorAll(’.tb’).forEach(b => b.className = ‘tb’);
+btn.classList.add(‘a’+type);
+document.getElementById(‘tt’).value = type;
+const tg = document.getElementById(‘tto-grp’);
 if (tg) tg.style.display = type === ‘transfer’ ? ‘block’ : ‘none’;
 }
-
-function updateTxCompanyOptions(cid) {
-const cats = getCategories(cid);
-const catSel = document.getElementById(‘tx-category’);
-if (catSel) catSel.innerHTML = cats.map(c => `<option>${c}</option>`).join(’’);
-const contacts = DB.companyContacts[cid] || [];
-const cg = document.getElementById(‘tx-contact-company’);
-if (cg) cg.innerHTML = contacts.map(c => `<option value="${c.id}">${c.name} (${c.type})</option>`).join(’’);
+function updTxCo(cid) {
+const cats = getCats(cid);
+const el = document.getElementById(‘tcat’);
+if (el) el.innerHTML = cats.map(c=>`<option>${escape(c)}</option>`).join(’’);
+const cts = DB.companyCts[cid]||[];
+const ce = document.getElementById(‘tct-co’);
+if (ce) ce.innerHTML = cts.map(c=>`<option value="${c.id}">${escape(c.name)}</option>`).join(’’);
 }
-
 function saveTx(editId) {
-const type = document.getElementById(‘tx-type’).value;
-const company = document.getElementById(‘tx-company’).value;
-const date = document.getElementById(‘tx-date’).value;
-const amount = parseFloat(document.getElementById(‘tx-amount’).value);
-const desc = document.getElementById(‘tx-desc’).value.trim();
-const category = document.getElementById(‘tx-category’).value;
-const contact = document.getElementById(‘tx-contact’).value;
-const status = document.getElementById(‘tx-status’).value;
-const doc = document.getElementById(‘tx-doc’).value.trim();
-const notes = document.getElementById(‘tx-notes’).value.trim();
-const transferTo = document.getElementById(‘tx-transfer-to’)?.value;
-
-if (!desc || !amount || isNaN(amount)) { alert(‘Preencha descrição e valor.’); return; }
-
-const tx = { id: editId || genId(), company, date, desc, amount, type, category, contact, status, doc, notes, transferTo: type===‘transfer’?transferTo:undefined };
-
+const type = document.getElementById(‘tt’).value;
+const co = document.getElementById(‘tco’).value;
+const date = document.getElementById(‘tdate’).value;
+const amt = parseFloat(document.getElementById(‘tamt’).value);
+const desc = document.getElementById(‘tdesc’).value.trim();
+const cat = document.getElementById(‘tcat’).value;
+const ctid = document.getElementById(‘tctid’).value;
+const status = document.getElementById(‘tstat’).value;
+const doc = document.getElementById(‘tdoc’).value.trim();
+const toId = document.getElementById(‘tto’)?.value;
+if (!desc || !amt || isNaN(amt)) { alert(‘Preencha descrição e valor.’); return; }
+const tx = { id: editId||genId(), co, date, desc, amt, type, cat, ctid, status, doc, toId: type===‘transfer’?toId:undefined };
 if (editId) {
-const idx = DB.transactions.findIndex(t => t.id === editId);
-if (idx >= 0) DB.transactions[idx] = tx;
+const i = DB.txs.findIndex(t => t.id === editId);
+if (i >= 0) DB.txs[i] = tx;
 } else {
-DB.transactions.push(tx);
-// If transfer, create incoming side
-if (type === ‘transfer’ && transferTo) {
-DB.transactions.push({
-id: genId(), company: transferTo, date, desc: `Recebido de ${getCompany(company)?.name||''}`, amount, type: ‘transfer’,
-category: ‘Transferência Interna’, contact: ‘’, status: ‘paid’, doc: ‘’, notes: ‘’, transferFrom: company
-});
+DB.txs.push(tx);
+if (type === ‘transfer’ && toId) {
+DB.txs.push({ id: genId(), co: toId, date, desc: ’Recebido de ’+getCo(co)?.name, amt, type: ‘transfer’, cat: ‘Transferência Interna’, ctid: ‘’, status: ‘paid’, doc: ‘’, fromId: co });
 }
 }
-
-saveData();
-closeModal();
-refreshCurrentPage();
+saveDB(); closeModal(); refresh();
 }
-
-function deleteTx(id) {
+function delTx(id) {
 if (!confirm(‘Excluir este lançamento?’)) return;
-DB.transactions = DB.transactions.filter(t => t.id !== id);
-saveData();
-closeModal();
-refreshCurrentPage();
+DB.txs = DB.txs.filter(t => t.id !== id);
+saveDB(); closeModal(); refresh();
 }
+function openTxDetail(id) { const t = DB.txs.find(x => x.id === id); if (t) openTxModal(t); }
 
-function openTxDetail(id) {
-const tx = DB.transactions.find(t => t.id === id);
-if (tx) openNewTransaction(tx);
-}
-
-// ============================================================
-// TRANSFER MODAL
-// ============================================================
+// ── TRANSFER MODAL ────────────────────────────────────────
 function openTransfer() {
-const html = ` <div class="modal-handle"></div> <div class="modal-title">Nova Transferência Intercompany</div> <div class="form-group"><label class="form-label">Empresa Origem</label> <select class="form-select" id="tr-from">${DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select> </div> <div class="form-group"><label class="form-label">Empresa Destino</label> <select class="form-select" id="tr-to">${DB.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select> </div> <div class="form-row"> <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="tr-date" value="${new Date().toISOString().split('T')[0]}"></div> <div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" class="form-input" id="tr-amount" placeholder="0,00"></div> </div> <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="tr-desc" placeholder="Motivo da transferência"></div> <div class="btn-row"> <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button> <button class="btn btn-primary" onclick="saveTransfer()">Transferir</button> </div> `;
-showModal(html);
+showModal(` <div class="mh"></div> <div class="mt">Nova Transferência</div> <div class="fg"><label class="fl">De</label><select class="fs" id="trfrom">${DB.companies.map(c=>`<option value="${c.id}">${escape(c.name)}</option>`).join('')}</select></div> <div class="fg"><label class="fl">Para</label><select class="fs" id="trto">${DB.companies.map(c=>`<option value="${c.id}">${escape(c.name)}</option>`).join('')}</select></div> <div class="frow2"> <div class="fg"><label class="fl">Data</label><input type="date" class="fi" id="trdate" value="${new Date().toISOString().split('T')[0]}"></div> <div class="fg"><label class="fl">Valor R$</label><input type="number" class="fi" id="tramt" placeholder="0.00"></div> </div> <div class="fg"><label class="fl">Descrição</label><input type="text" class="fi" id="trdesc" placeholder="Motivo..."></div> <div class="brow"> <button class="btn bsec" onclick="closeModal()">Cancelar</button> <button class="btn bprim" onclick="saveTr()">Transferir</button> </div> `);
 }
-
-function saveTransfer() {
-const from = document.getElementById(‘tr-from’).value;
-const to = document.getElementById(‘tr-to’).value;
-const date = document.getElementById(‘tr-date’).value;
-const amount = parseFloat(document.getElementById(‘tr-amount’).value);
-const desc = document.getElementById(‘tr-desc’).value.trim();
+function saveTr() {
+const from = document.getElementById(‘trfrom’).value;
+const to = document.getElementById(‘trto’).value;
+const date = document.getElementById(‘trdate’).value;
+const amt = parseFloat(document.getElementById(‘tramt’).value);
+const desc = document.getElementById(‘trdesc’).value.trim();
 if (from === to) { alert(‘Origem e destino devem ser diferentes.’); return; }
-if (!amount || !desc) { alert(‘Preencha todos os campos.’); return; }
-const id1 = genId(), id2 = genId();
-DB.transactions.push({ id: id1, company: from, date, desc, amount, type: ‘transfer’, category: ‘Transferência Interna’, contact: ‘’, status: ‘paid’, doc: ‘’, notes: ‘’, transferTo: to });
-DB.transactions.push({ id: id2, company: to, date, desc: `Recebido de ${getCompany(from)?.name}`, amount, type: ‘transfer’, category: ‘Transferência Interna’, contact: ‘’, status: ‘paid’, doc: ‘’, notes: ‘’, transferFrom: from });
-saveData(); closeModal(); refreshCurrentPage();
+if (!amt || !desc) { alert(‘Preencha todos os campos.’); return; }
+DB.txs.push({ id: genId(), co: from, date, desc, amt, type: ‘transfer’, cat: ‘Transferência Interna’, ctid: ‘’, status: ‘paid’, doc: ‘’, toId: to });
+DB.txs.push({ id: genId(), co: to, date, desc: ’Recebido de ’+getCo(from)?.name, amt, type: ‘transfer’, cat: ‘Transferência Interna’, ctid: ‘’, status: ‘paid’, doc: ‘’, fromId: from });
+saveDB(); closeModal(); refresh();
 }
 
-// ============================================================
-// CONTACT MODALS
-// ============================================================
-function openNewContact(prefill={}) {
-const scopeOptions = [
-{ value: ‘global’, label: ‘Global (todo o grupo)’ },
-…DB.companies.map(c => ({ value: c.id, label: c.name }))
-];
-const html = ` <div class="modal-handle"></div> <div class="modal-title">${prefill.id ? 'Editar' : 'Novo'} Contato</div> <div class="form-row"> <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="ct-name" value="${prefill.name||''}"></div> <div class="form-group"><label class="form-label">Tipo</label> <select class="form-select" id="ct-type"> ${['Cliente','Fornecedor','Funcionário','Parceiro'].map(t=>`<option ${prefill.type===t?‘selected’:’’}>${t}</option>`).join('')} </select> </div> </div> <div class="form-row"> <div class="form-group"><label class="form-label">CPF/CNPJ</label><input type="text" class="form-input" id="ct-cnpj" value="${prefill.cnpj||''}"></div> <div class="form-group"><label class="form-label">Telefone</label><input type="tel" class="form-input" id="ct-phone" value="${prefill.phone||''}"></div> </div> <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="form-input" id="ct-email" value="${prefill.email||''}"></div> <div class="form-group"><label class="form-label">Endereço</label><input type="text" class="form-input" id="ct-address" value="${prefill.address||''}"></div> <div class="form-group"><label class="form-label">Escopo</label> <select class="form-select" id="ct-scope"> ${scopeOptions.map(o=>`<option value=”${o.value}” ${(prefill.scope||‘global’)===o.value?‘selected’:’’}>${o.label}</option>`).join('')} </select> </div> <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="ct-notes">${prefill.notes||''}</textarea></div> <div class="btn-row"> ${prefill.id ? `<button class="btn btn-danger" onclick="deleteContact('${prefill.id}','${prefill.scope||'global'}')">Excluir</button>` : '<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>'} <button class="btn btn-primary" onclick="saveContact(${prefill.id?`’${prefill.id}’`:'null'},${prefill.id?`’${prefill.scope||‘global’}’`:'null'})">Salvar</button> </div> `;
-showModal(html);
+// ── CONTATO MODAL ─────────────────────────────────────────
+function openCtModal(prefill) {
+prefill = prefill || {};
+const scopes = [{ v:‘global’, l:‘Global (todo o grupo)’ }, …DB.companies.map(c=>({ v:c.id, l:c.name }))];
+showModal(` <div class="mh"></div> <div class="mt">${prefill.id?'Editar':'Novo'} Contato</div> <div class="frow2"> <div class="fg"><label class="fl">Nome</label><input type="text" class="fi" id="ctn" value="${escape(prefill.name||'')}"></div> <div class="fg"><label class="fl">Tipo</label><select class="fs" id="ctt">${['Cliente','Fornecedor','Funcionário','Parceiro'].map(t=>`<option ${prefill.type===t?‘selected’:’’}>${t}</option>`).join('')}</select></div> </div> <div class="frow2"> <div class="fg"><label class="fl">CPF/CNPJ</label><input type="text" class="fi" id="ctc" value="${escape(prefill.cnpj||'')}"></div> <div class="fg"><label class="fl">Telefone</label><input type="tel" class="fi" id="ctp" value="${escape(prefill.phone||'')}"></div> </div> <div class="fg"><label class="fl">E-mail</label><input type="email" class="fi" id="cte" value="${escape(prefill.email||'')}"></div> <div class="fg"><label class="fl">Escopo</label><select class="fs" id="ctsc">${scopes.map(o=>`<option value=”${o.v}” ${(prefill.scope||‘global’)===o.v?‘selected’:’’}>${escape(o.l)}</option>`).join('')}</select></div> <div class="brow"> ${prefill.id?`<button class="btn bdng" onclick="delCt('${prefill.id}','${prefill.scope||'global'}')">Excluir</button>`:'<button class="btn bsec" onclick="closeModal()">Cancelar</button>'} <button class="btn bprim" onclick="saveCt(${prefill.id?`’${prefill.id}’,’${prefill.scope||‘global’}’`:'null,null'})">Salvar</button> </div> `);
 }
-
-function saveContact(editId, oldScope) {
-const name = document.getElementById(‘ct-name’).value.trim();
-const type = document.getElementById(‘ct-type’).value;
-const cnpj = document.getElementById(‘ct-cnpj’).value.trim();
-const phone = document.getElementById(‘ct-phone’).value.trim();
-const email = document.getElementById(‘ct-email’).value.trim();
-const address = document.getElementById(‘ct-address’).value.trim();
-const notes = document.getElementById(‘ct-notes’).value.trim();
-const scope = document.getElementById(‘ct-scope’).value;
+function saveCt(editId, oldScope) {
+const name = document.getElementById(‘ctn’).value.trim();
+const type = document.getElementById(‘ctt’).value;
+const cnpj = document.getElementById(‘ctc’).value.trim();
+const phone = document.getElementById(‘ctp’).value.trim();
+const email = document.getElementById(‘cte’).value.trim();
+const scope = document.getElementById(‘ctsc’).value;
 if (!name) { alert(‘Nome obrigatório.’); return; }
-const contact = { id: editId || genId(), name, type, cnpj, phone, email, address, notes, scope };
-// Remove old if editing
-if (editId) deleteContact(editId, oldScope, true);
-// Save to right place
-if (scope === ‘global’) {
-DB.globalContacts.push(contact);
-} else {
-if (!DB.companyContacts[scope]) DB.companyContacts[scope] = [];
-DB.companyContacts[scope].push(contact);
+const ct = { id: editId||genId(), name, type, cnpj, phone, email, scope };
+if (editId) delCt(editId, oldScope, true);
+if (scope === ‘global’) { DB.globalContacts.push(ct); }
+else { if (!DB.companyCts[scope]) DB.companyCts[scope] = []; DB.companyCts[scope].push(ct); }
+saveDB(); closeModal(); renderCts();
 }
-saveData(); closeModal(); renderContatos();
-}
-
-function deleteContact(id, scope, silent=false) {
+function delCt(id, scope, silent) {
 if (!silent && !confirm(‘Excluir contato?’)) return;
-if (scope === ‘global’) {
-DB.globalContacts = DB.globalContacts.filter(c => c.id !== id);
-} else {
-for (const cid in DB.companyContacts) {
-DB.companyContacts[cid] = DB.companyContacts[cid].filter(c => c.id !== id);
+if (scope === ‘global’) { DB.globalContacts = DB.globalContacts.filter(c => c.id !== id); }
+else { for (const k in DB.companyCts) DB.companyCts[k] = DB.companyCts[k].filter(c => c.id !== id); }
+if (!silent) { saveDB(); closeModal(); renderCts(); }
 }
-}
-if (!silent) { saveData(); closeModal(); renderContatos(); }
-}
-
-function openContactDetail(id) {
-const contact = getContact(id);
-if (!contact) return;
-// Calculate totals
-const txs = DB.transactions.filter(t => t.contact === id && t.type !== ‘transfer’);
-const stats = calcStats(txs);
-const html = `<div class="modal-handle"></div> <div class="profile-header"> <div class="profile-avatar">${initials(contact.name)}</div> <div> <div class="profile-name">${contact.name}</div> <div class="profile-meta">${contact.type}${contact.cnpj?' · '+contact.cnpj:''}</div> <div class="profile-meta">${contact.phone||''}${contact.email?' · '+contact.email:''}</div> </div> </div> <div class="stats-grid" style="margin-bottom:12px;"> <div class="stat-card"><div class="stat-label">Total Recebido</div><div class="stat-value green">${fmtShort(stats.income)}</div></div> <div class="stat-card"><div class="stat-label">Total Pago</div><div class="stat-value red">${fmtShort(stats.expense)}</div></div> </div> <div class="card-title">Histórico (${txs.length} transações)</div> <div class="tx-list" style="max-height:250px;overflow-y:auto;"> ${txs.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t =>`
-<div class="tx-item"><div class="tx-icon ${t.type}">${t.type===‘in’?‘↑’:‘↓’}</div>
-<div class="tx-info"><div class="tx-desc">${t.desc}</div><div class="tx-meta">${fmtDate(t.date)} · ${t.category}</div></div>
-<div class="tx-amount ${t.type}">${t.type===‘in’?’+’:’-’}${fmt(t.amount)}</div>
-</div>`).join('') || '<div style="color:var(--text3);text-align:center;padding:16px;">Nenhuma transação vinculada</div>'} </div> <div class="btn-row" style="margin-top:16px;"> <button class="btn btn-secondary" onclick="closeModal()">Fechar</button> <button class="btn btn-primary" onclick="closeModal();openNewContact(${JSON.stringify(contact).replace(/"/g,'&quot;')})">Editar</button> </div> `;
-showModal(html);
+function openCtDetail(id) {
+const ct = getCt(id);
+if (!ct) return;
+const txs = DB.txs.filter(t => t.ctid === id && t.type !== ‘transfer’);
+const s = stats(txs);
+showModal(` <div class="mh"></div> <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"> <div class="cav" style="width:56px;height:56px;font-size:22px">${initials(ct.name)}</div> <div><div style="font-size:18px;font-weight:700">${escape(ct.name)}</div><div style="font-size:13px;color:var(--text3)">${escape(ct.type)}${ct.phone?' · '+escape(ct.phone):''}</div></div> </div> <div class="sgrid" style="margin-bottom:14px"> <div class="sc"><div class="sl">Total Recebido</div><div class="sv g">${fmtS(s.inc)}</div></div> <div class="sc"><div class="sl">Total Pago</div><div class="sv r">${fmtS(s.exp)}</div></div> </div> <div class="ct">Histórico (${txs.length})</div> <div style="max-height:220px;overflow-y:auto"> ${txs.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t=>`
+<div class="txi"><div class="tico ${t.type}">${t.type===‘in’?‘↑’:‘↓’}</div>
+<div class="tiinfo"><div class="tidesc">${escape(t.desc)}</div><div class="timeta">${fmtD(t.date)} · ${escape(t.cat)}</div></div>
+<div class="tiamt ${t.type}">${t.type===‘in’?’+’:’-’}${fmt(t.amt)}</div>
+</div>`).join('') || '<div style="color:var(--text3);text-align:center;padding:16px">Nenhuma transação</div>'} </div> <div class="brow" style="margin-top:16px"> <button class="btn bsec" onclick="closeModal()">Fechar</button> <button class="btn bprim" onclick="closeModal();openCtModal(${JSON.stringify(ct).replace(/"/g,'&quot;')})">Editar</button> </div> `);
 }
 
-// ============================================================
-// COMPANY MODALS
-// ============================================================
-function openNewCompany(prefill={}) {
-const selectedColor = prefill.color || COLORS[DB.companies.length % COLORS.length];
-const html = `<div class="modal-handle"></div> <div class="modal-title">${prefill.id ? 'Editar' : 'Nova'} Empresa Filha</div> <div class="form-group"><label class="form-label">Nome da Empresa</label><input type="text" class="form-input" id="co-name" value="${prefill.name||''}"></div> <div class="form-row"> <div class="form-group"><label class="form-label">CNPJ</label><input type="text" class="form-input" id="co-cnpj" value="${prefill.cnpj||''}"></div> <div class="form-group"><label class="form-label">Segmento</label><input type="text" class="form-input" id="co-segment" value="${prefill.segment||''}"></div> </div> <div class="form-group"> <label class="form-label">Cor Identificadora</label> <div class="color-picker-row" id="color-picker"> ${COLORS.map((c,i) =>`<div class="color-dot ${selectedColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}',this)" title="${COLOR_NAMES[i]}"></div>`).join('')} </div> </div> <input type="hidden" id="co-color" value="${selectedColor}"> <div class="btn-row"> ${prefill.id ? `<button class="btn btn-danger" onclick="deleteCompany('${prefill.id}')">Excluir</button>` : '<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>'} <button class="btn btn-primary" onclick="saveCompany(${prefill.id?`’${prefill.id}’`:'null'})">Salvar</button> </div> `;
-showModal(html);
+// ── COMPANY MODAL ─────────────────────────────────────────
+function openCoModal(prefill) {
+prefill = prefill || {};
+const selColor = prefill.color || COLORS[DB.companies.length % COLORS.length];
+showModal(` <div class="mh"></div> <div class="mt">${prefill.id?'Editar':'Nova'} Empresa Filha</div> <div class="fg"><label class="fl">Nome</label><input type="text" class="fi" id="con" value="${escape(prefill.name||'')}"></div> <div class="frow2"> <div class="fg"><label class="fl">CNPJ</label><input type="text" class="fi" id="coc" value="${escape(prefill.cnpj||'')}"></div> <div class="fg"><label class="fl">Segmento</label><input type="text" class="fi" id="cos" value="${escape(prefill.segment||'')}"></div> </div> <div class="fg"><label class="fl">Cor</label> <div class="cdots">${COLORS.map(c=>`<div class="cdot ${selColor===c?'sel':''}" style="background:${c}" onclick="selCol('${c}',this)"></div>`).join('')}</div> </div> <input type="hidden" id="cocol" value="${selColor}"> <div class="brow"> ${prefill.id?`<button class="btn bdng" onclick="delCo('${prefill.id}')">Excluir</button>`:'<button class="btn bsec" onclick="closeModal()">Cancelar</button>'} <button class="btn bprim" onclick="saveCo(${prefill.id?`’${prefill.id}’`:'null'})">Salvar</button> </div> `);
 }
-
-function selectColor(color, el) {
-document.querySelectorAll(’.color-dot’).forEach(d => d.classList.remove(‘selected’));
-el.classList.add(‘selected’);
-document.getElementById(‘co-color’).value = color;
+function selCol(color, el) {
+document.querySelectorAll(’.cdot’).forEach(d => d.classList.remove(‘sel’));
+el.classList.add(‘sel’);
+document.getElementById(‘cocol’).value = color;
 }
-
-function saveCompany(editId) {
-const name = document.getElementById(‘co-name’).value.trim();
-const cnpj = document.getElementById(‘co-cnpj’).value.trim();
-const segment = document.getElementById(‘co-segment’).value.trim();
-const color = document.getElementById(‘co-color’).value;
+function saveCo(editId) {
+const name = document.getElementById(‘con’).value.trim();
+const cnpj = document.getElementById(‘coc’).value.trim();
+const segment = document.getElementById(‘cos’).value.trim();
+const color = document.getElementById(‘cocol’).value;
 if (!name) { alert(‘Nome obrigatório.’); return; }
 if (editId) {
 const co = DB.companies.find(c => c.id === editId);
-if (co) { co.name = name; co.cnpj = cnpj; co.segment = segment; co.color = color; }
+if (co) Object.assign(co, { name, cnpj, segment, color });
 } else {
 const id = genId();
 DB.companies.push({ id, name, cnpj, segment, color });
-DB.companyCategories[id] = [];
-DB.companyContacts[id] = [];
+DB.companyCats[id] = [];
+DB.companyCts[id] = [];
 }
-saveData(); closeModal(); updateAccent(); refreshCurrentPage();
+saveDB(); closeModal(); updateAccent(); refresh();
 }
-
-function deleteCompany(id) {
-if (!confirm(‘Excluir empresa e todos os seus dados?’)) return;
+function delCo(id) {
+if (!confirm(‘Excluir empresa e todos os dados?’)) return;
 DB.companies = DB.companies.filter(c => c.id !== id);
-DB.transactions = DB.transactions.filter(t => t.company !== id);
-delete DB.companyCategories[id];
-delete DB.companyContacts[id];
-if (currentCompany === id) currentCompany = ‘consolidated’;
-saveData(); closeModal(); updateAccent(); updateTopbar(); refreshCurrentPage();
+DB.txs = DB.txs.filter(t => t.co !== id);
+delete DB.companyCats[id]; delete DB.companyCts[id];
+if (curCo === id) curCo = ‘consolidated’;
+saveDB(); closeModal(); updateAccent(); updateTopbar(); refresh();
 }
-
-function editCompany(id) {
-const co = DB.companies.find(c => c.id === id);
-if (co) openNewCompany(co);
-}
-
+function editCo(id) { const c = DB.companies.find(x => x.id === id); if (c) openCoModal(c); }
 function editHolding() {
-const html = `<div class="modal-handle"></div> <div class="modal-title">Editar Holding</div> <div class="form-group"><label class="form-label">Nome do Grupo</label><input type="text" class="form-input" id="h-name" value="${DB.holding.name}"></div> <div class="form-group"><label class="form-label">CNPJ</label><input type="text" class="form-input" id="h-cnpj" value="${DB.holding.cnpj}"></div> <div class="btn-row"> <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button> <button class="btn btn-primary" onclick="saveHolding()">Salvar</button> </div>`;
-showModal(html);
+showModal(`<div class="mh"></div> <div class="mt">Editar Holding</div> <div class="fg"><label class="fl">Nome do Grupo</label><input type="text" class="fi" id="hn" value="${escape(DB.holding.name)}"></div> <div class="fg"><label class="fl">CNPJ</label><input type="text" class="fi" id="hc" value="${escape(DB.holding.cnpj)}"></div> <div class="brow"> <button class="btn bsec" onclick="closeModal()">Cancelar</button> <button class="btn bprim" onclick="saveHolding()">Salvar</button> </div>`);
 }
-
 function saveHolding() {
-DB.holding.name = document.getElementById(‘h-name’).value.trim() || DB.holding.name;
-DB.holding.cnpj = document.getElementById(‘h-cnpj’).value.trim();
-saveData(); closeModal(); refreshCurrentPage();
+DB.holding.name = document.getElementById(‘hn’).value.trim() || DB.holding.name;
+DB.holding.cnpj = document.getElementById(‘hc’).value.trim();
+saveDB(); closeModal(); refresh();
 }
 
-// ============================================================
-// INIT — run after DOM ready
-// ============================================================
-function appInit() {
-try {
+// ── INIT ──────────────────────────────────────────────────
+window.addEventListener(‘DOMContentLoaded’, function() {
 updateAccent();
 updateTopbar();
-const fab = document.getElementById(‘fab’);
-if (fab) fab.style.display = ‘none’;
-const firstNav = document.querySelector(’.nav-btn’);
-switchPage(‘grupo’, firstNav);
-} catch(e) {
-console.error(‘Init error:’, e);
-setTimeout(appInit, 300);
-}
-}
-if (document.readyState === ‘loading’) {
-document.addEventListener(‘DOMContentLoaded’, appInit);
-} else {
-appInit();
-}
-
-// PWA ready
+goPage(‘grupo’, document.querySelector(’.nb’));
+});
 </script>
 
 </body>
